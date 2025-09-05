@@ -1,11 +1,12 @@
+       >>SOURCE FORMAT FREE
+       *> IDAHO-2 – Demo for account creation / password validation
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. CREATE-ACCOUNT-DEMO.
+       PROGRAM-ID. CREATE-ACCOUNT.
 
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        01 WS-INPUT-LINE      PIC X(80).
        01 WS-OUTPUT-LINE     PIC X(80).
-
        01 WS-USERNAME        PIC X(20).
        01 WS-PASSWORD        PIC X(12).
        01 WS-USER-COUNT      PIC 99 VALUE 0.
@@ -33,21 +34,21 @@
 
        CREATE-ACCOUNT.
            IF WS-USER-COUNT >= WS-MAX-USERS
-               MOVE "All permitted accounts have been created" TO WS-OUTPUT-LINE
-               PERFORM WRITE-OUTPUT
+              MOVE "All permitted accounts created" TO WS-OUTPUT-LINE
+              PERFORM WRITE-OUTPUT
            ELSE
-               PERFORM GET-NEW-USERNAME
-               PERFORM GET-NEW-PASSWORD
-               IF WS-HAS-UPPER = 'Y'
-                  AND WS-HAS-DIGIT = 'Y'
-                  AND WS-HAS-SPECIAL = 'Y'
-                  AND WS-VALID-LENGTH = 'Y'
-                   ADD 1 TO WS-USER-COUNT
-                   MOVE WS-USERNAME TO WS-USER-ID(WS-USER-COUNT)
-                   MOVE WS-PASSWORD TO WS-USER-PASS(WS-USER-COUNT)
-                   MOVE "Account created successfully!" TO WS-OUTPUT-LINE
-                   PERFORM WRITE-OUTPUT
-               END-IF
+              PERFORM GET-NEW-USERNAME
+              PERFORM GET-NEW-PASSWORD
+              IF WS-HAS-UPPER = 'Y'
+                 AND WS-HAS-DIGIT = 'Y'
+                 AND WS-HAS-SPECIAL = 'Y'
+                 AND WS-VALID-LENGTH = 'Y'
+                 ADD 1 TO WS-USER-COUNT
+                 MOVE WS-USERNAME TO WS-USER-ID(WS-USER-COUNT)
+                 MOVE WS-PASSWORD TO WS-USER-PASS(WS-USER-COUNT)
+                 MOVE "Account created successfully!" TO WS-OUTPUT-LINE
+                 PERFORM WRITE-OUTPUT
+              END-IF
            END-IF.
 
        GET-NEW-USERNAME.
@@ -65,7 +66,7 @@
 
        VALIDATE-PASSWORD.
            MOVE 'N' TO WS-HAS-UPPER WS-HAS-DIGIT WS-HAS-SPECIAL WS-VALID-LENGTH
-           MOVE 0 TO WS-PASSWORD-LENGTH
+           MOVE 0  TO WS-PASSWORD-LENGTH
            PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > 12
                IF WS-PASSWORD(WS-I:1) NOT = SPACE
                    ADD 1 TO WS-PASSWORD-LENGTH
@@ -89,19 +90,19 @@
                END-IF
            END-PERFORM
            IF WS-VALID-LENGTH = 'N'
-               MOVE "Password must be 8-12 characters" TO WS-OUTPUT-LINE
+               MOVE "Password must be 8-12 chars" TO WS-OUTPUT-LINE
                PERFORM WRITE-OUTPUT
            END-IF
            IF WS-HAS-UPPER = 'N'
-               MOVE "Password must have uppercase" TO WS-OUTPUT-LINE
+               MOVE "Password needs uppercase" TO WS-OUTPUT-LINE
                PERFORM WRITE-OUTPUT
            END-IF
            IF WS-HAS-DIGIT = 'N'
-               MOVE "Password must have digit" TO WS-OUTPUT-LINE
+               MOVE "Password needs digit" TO WS-OUTPUT-LINE
                PERFORM WRITE-OUTPUT
            END-IF
            IF WS-HAS-SPECIAL = 'N'
-               MOVE "Password must have special (!,@,#,$...)" TO WS-OUTPUT-LINE
+               MOVE "Password needs special (!,@,#,$...)" TO WS-OUTPUT-LINE
                PERFORM WRITE-OUTPUT
            END-IF.
 
