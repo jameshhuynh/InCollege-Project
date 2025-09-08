@@ -142,7 +142,7 @@
            PERFORM WRITE-OUTPUT
 
            IF WS-USER-COUNT >= WS-MAX-USERS
-              MOVE "All permitted accounts created" TO WS-OUTPUT-LINE
+              MOVE "All permitted accounts have been created, please come back later." TO WS-OUTPUT-LINE
               PERFORM WRITE-OUTPUT
            ELSE
               PERFORM GET-NEW-USERNAME
@@ -245,7 +245,9 @@
            PERFORM WRITE-OUTPUT
            MOVE "=== USER DASHBOARD ===" TO WS-OUTPUT-LINE
            PERFORM WRITE-OUTPUT
-           STRING "Welcome, " WS-LOGIN-USERNAME "!" INTO WS-OUTPUT-LINE
+           MOVE SPACES TO WS-OUTPUT-LINE
+           STRING "Welcome, " FUNCTION TRIM(WS-LOGIN-USERNAME) "!"
+               INTO WS-OUTPUT-LINE
            PERFORM WRITE-OUTPUT
            MOVE "You have successfully logged into the system." TO WS-OUTPUT-LINE
            PERFORM WRITE-OUTPUT
@@ -322,3 +324,4 @@
 
        WRITE-OUTPUT.
            DISPLAY WS-OUTPUT-LINE.
+           
