@@ -1,7 +1,7 @@
        >>SOURCE FORMAT FREE
-       *> InCollege Project: Week 3 Deliverable - Complete Implementation
+       *> IDAHO-5: Combined Account System + Login Menu
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. INCOLLEGE.
+       PROGRAM-ID. STUDENT-SYSTEM.
        AUTHOR. STUDENT.
 
        ENVIRONMENT DIVISION.
@@ -9,90 +9,60 @@
        FILE-CONTROL.
            SELECT USER-FILE ASSIGN TO "users.dat"
                ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-USER-FILE-STATUS.
-
-           SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
-               ORGANIZATION IS LINE SEQUENTIAL
-               ACCESS MODE IS SEQUENTIAL
-               FILE STATUS IS WS-INPUT-FILE-STATUS.
-
-           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-               ORGANIZATION IS LINE SEQUENTIAL
-               ACCESS MODE IS SEQUENTIAL
-               FILE STATUS IS WS-OUTPUT-FILE-STATUS.
+               FILE STATUS IS WS-FILE-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
        FD  USER-FILE.
        01  USER-REC       PIC X(80).
 
-       FD  INPUT-FILE.
-       01  INPUT-REC      PIC X(80).
-
-       FD  OUTPUT-FILE.
-       01  OUTPUT-REC     PIC X(80).
-
        WORKING-STORAGE SECTION.
-       01  WS-USER-FILE-STATUS    PIC XX VALUE SPACES.
-       01  WS-INPUT-FILE-STATUS   PIC XX VALUE SPACES.
-       01  WS-OUTPUT-FILE-STATUS  PIC XX VALUE SPACES.
+       01 WS-USER-CHOICE      PIC X.
+       01  WS-FILE-STATUS    PIC XX VALUE SPACES.
+       01  WS-INPUT-LINE     PIC X(80).
+       01  WS-OUTPUT-LINE    PIC X(80).
 
-       01  WS-INPUT-LINE          PIC X(80).
-       01  WS-OUTPUT-LINE         PIC X(80).
-       01  WS-USER-CHOICE         PIC X.
+       01  WS-USERNAME       PIC X(20).
+       01  WS-PASSWORD       PIC X(20).
 
-       01  WS-USERNAME            PIC X(20).
-       01  WS-PASSWORD            PIC X(20).
-       01  WS-LOGIN-USERNAME      PIC X(20).
-       01  WS-LOGIN-PASSWORD      PIC X(20).
-
-       01  WS-USER-COUNT          PIC 99 VALUE 0.
-       01  WS-MAX-USERS           PIC 99 VALUE 5.
+       01  WS-USER-COUNT     PIC 99 VALUE 0.
+       01  WS-MAX-USERS      PIC 99 VALUE 5.
 
        01  WS-PASSWORD-FLAGS.
-           05 WS-HAS-UPPER        PIC X VALUE 'N'.
-           05 WS-HAS-DIGIT        PIC X VALUE 'N'.
-           05 WS-HAS-SPECIAL      PIC X VALUE 'N'.
-           05 WS-VALID-LENGTH     PIC X VALUE 'N'.
+           05 WS-HAS-UPPER    PIC X VALUE 'N'.
+           05 WS-HAS-DIGIT    PIC X VALUE 'N'.
+           05 WS-HAS-SPECIAL  PIC X VALUE 'N'.
+           05 WS-VALID-LENGTH PIC X VALUE 'N'.
 
-       01  WS-CHAR                PIC X.
-       01  WS-I                   PIC 99.
-       01  WS-J                   PIC 99.
-       01  WS-PASSWORD-LENGTH     PIC 99.
-       01  WS-LOGIN-SUCCESS       PIC X VALUE 'N'.
-       01  WS-MENU-CHOICE         PIC X.
-       01  WS-SKILL-CHOICE        PIC X.
-       01  WS-CONTINUE            PIC X VALUE 'Y'.
-       01  WS-LOGGED-IN           PIC X VALUE 'N'.
-       01  WS-CURRENT-USER        PIC X(20).
+       01 WS-CHAR            PIC X.
+       01 WS-I               PIC 99.
+       01 WS-J               PIC 99.
+       01 WS-PASSWORD-LENGTH PIC 99.
 
-       01  WS-USER-TABLE.
+       01 WS-LOGIN-USERNAME  PIC X(20).
+       01 WS-LOGIN-PASSWORD  PIC X(20).
+       01 WS-LOGIN-SUCCESS   PIC X VALUE 'N'.
+
+       01 WS-MENU-CHOICE     PIC X.
+       01 WS-SKILL-CHOICE    PIC X.
+       01 WS-CONTINUE        PIC X VALUE 'Y'.
+
+       01 WS-USER-TABLE.
           05 WS-USER-ENTRY OCCURS 5 TIMES.
-             10 WS-USER-ID         PIC X(20).
-             10 WS-USER-PASS       PIC X(12).
+             10 WS-USER-ID   PIC X(20).
+             10 WS-USER-PASS PIC X(12).
 
        PROCEDURE DIVISION.
        MAIN-PARA.
-           PERFORM INITIALIZE-FILES
+           PERFORM ENSURE-FILE
            PERFORM LOAD-USERS
-           PERFORM MAIN-PROGRAM
-           PERFORM CLOSE-FILES
+           PERFORM MAIN-MENU UNTIL WS-CONTINUE = 'N'
            STOP RUN.
 
        *>--------------------------------------------------
-       INITIALIZE-FILES.
-           OPEN INPUT INPUT-FILE
-           OPEN OUTPUT OUTPUT-FILE
-           PERFORM ENSURE-USER-FILE.
-
-       CLOSE-FILES.
-           CLOSE INPUT-FILE
-           CLOSE OUTPUT-FILE.
-
-       ENSURE-USER-FILE.
+       ENSURE-FILE.
            OPEN INPUT USER-FILE
-           IF WS-USER-FILE-STATUS = "35"
-              CLOSE USER-FILE
+           IF WS-FILE-STATUS = "35"
               OPEN OUTPUT USER-FILE
               CLOSE USER-FILE
            ELSE
@@ -103,9 +73,9 @@
        LOAD-USERS.
            MOVE 0 TO WS-USER-COUNT
            OPEN INPUT USER-FILE
-           IF WS-USER-FILE-STATUS = "00"
+           IF WS-FILE-STATUS = "00"
               PERFORM READ-USER-RECORD
-              PERFORM UNTIL WS-USER-FILE-STATUS NOT = "00" OR WS-USER-COUNT >= WS-MAX-USERS
+              PERFORM UNTIL WS-FILE-STATUS NOT = "00" OR WS-USER-COUNT >= WS-MAX-USERS
                   PERFORM PARSE-USER-RECORD
                   PERFORM READ-USER-RECORD
               END-PERFORM
@@ -129,36 +99,40 @@
            END-IF.
 
        *>--------------------------------------------------
-       MAIN-PROGRAM.
-           PERFORM DISPLAY-AND-WRITE WITH "Welcome to InCollege!"
-           PERFORM INITIAL-MENU UNTIL WS-CONTINUE = 'N'.
+       MAIN-MENU.
+           DISPLAY "========================================"
+           DISPLAY "         WELCOME TO INCOLLEGE"
+           DISPLAY "========================================"
+           DISPLAY "1. Create New Account"
+           DISPLAY "2. Login to Existing Account"
+           DISPLAY "3. Exit"
+           DISPLAY " "
+           DISPLAY "Enter your choice (1-3): " WITH NO ADVANCING
+           ACCEPT WS-MENU-CHOICE
 
-       INITIAL-MENU.
-           PERFORM DISPLAY-AND-WRITE WITH "Log In"
-           PERFORM DISPLAY-AND-WRITE WITH "Create New Account"
-           PERFORM DISPLAY-AND-WRITE WITH "Enter your choice:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE(1:1) TO WS-USER-CHOICE
-
-           EVALUATE WS-USER-CHOICE
+           EVALUATE WS-MENU-CHOICE
                WHEN '1'
-                   PERFORM LOGIN-PROCESS
+                   PERFORM CREATE-ACCOUNT
                WHEN '2'
-                   PERFORM CREATE-ACCOUNT-PROCESS
-               WHEN OTHER
+                   PERFORM LOGIN-USER
+               WHEN '3'
                    MOVE 'N' TO WS-CONTINUE
+                   DISPLAY "Goodbye!"
+               WHEN OTHER
+                   DISPLAY "Invalid choice. Please enter 1-3."
            END-EVALUATE.
 
        *>--------------------------------------------------
-       CREATE-ACCOUNT-PROCESS.
+       CREATE-ACCOUNT.
+           DISPLAY "=== CREATE NEW ACCOUNT ==="
+
            IF WS-USER-COUNT >= WS-MAX-USERS
-               PERFORM DISPLAY-AND-WRITE WITH "All permitted accounts have been created, please come back later"
+               DISPLAY "All permitted accounts have been created, please come back later."
            ELSE
                PERFORM GET-NEW-USERNAME
                PERFORM CHECK-USERNAME-EXISTS
                IF WS-LOGIN-SUCCESS = 'N'
                    PERFORM GET-NEW-PASSWORD
-                   PERFORM VALIDATE-PASSWORD
                    IF WS-HAS-UPPER = 'Y'
                       AND WS-HAS-DIGIT = 'Y'
                       AND WS-HAS-SPECIAL = 'Y'
@@ -167,19 +141,24 @@
                       MOVE WS-USERNAME TO WS-USER-ID(WS-USER-COUNT)
                       MOVE WS-PASSWORD(1:12) TO WS-USER-PASS(WS-USER-COUNT)
                       PERFORM SAVE-USER-TO-FILE
+                      DISPLAY "Account created successfully!"
                    END-IF
+               ELSE
+                   DISPLAY "Username already exists!"
                END-IF
            END-IF.
 
-       GET-NEW-USERNAME.
-           PERFORM DISPLAY-AND-WRITE WITH "Please enter your username:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE TO WS-USERNAME.
-
-       GET-NEW-PASSWORD.
-           PERFORM DISPLAY-AND-WRITE WITH "Please enter your password:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE TO WS-PASSWORD.
+       SAVE-USER-TO-FILE.
+           OPEN EXTEND USER-FILE
+           IF WS-FILE-STATUS = "00"
+              STRING WS-USERNAME DELIMITED BY SPACE
+                     "," DELIMITED BY SIZE
+                     WS-PASSWORD(1:12) DELIMITED BY SPACE
+                     INTO USER-REC
+              END-STRING
+              WRITE USER-REC
+              CLOSE USER-FILE
+           END-IF.
 
        CHECK-USERNAME-EXISTS.
            MOVE 'N' TO WS-LOGIN-SUCCESS
@@ -190,49 +169,30 @@
                END-IF
            END-PERFORM.
 
-       SAVE-USER-TO-FILE.
-           OPEN EXTEND USER-FILE
-           IF WS-USER-FILE-STATUS = "00"
-              STRING WS-USERNAME DELIMITED BY SPACE
-                     "," DELIMITED BY SIZE
-                     WS-PASSWORD(1:12) DELIMITED BY SPACE
-                     INTO USER-REC
-              END-STRING
-              WRITE USER-REC
-              CLOSE USER-FILE
-           END-IF.
-
        *>--------------------------------------------------
-       LOGIN-PROCESS.
-           MOVE 'N' TO WS-LOGIN-SUCCESS
-           PERFORM LOGIN-ATTEMPT UNTIL WS-LOGIN-SUCCESS = 'Y'
+       LOGIN-USER.
+           DISPLAY "=== USER LOGIN ==="
 
-           IF WS-LOGIN-SUCCESS = 'Y'
-              PERFORM DISPLAY-AND-WRITE WITH "You have successfully logged in"
-              STRING "Welcome, " DELIMITED BY SIZE
-                     WS-CURRENT-USER DELIMITED BY SPACE
-                     "!" DELIMITED BY SIZE
-                     INTO WS-OUTPUT-LINE
-              END-STRING
-              PERFORM DISPLAY-AND-WRITE WITH WS-OUTPUT-LINE
-              MOVE 'Y' TO WS-LOGGED-IN
-              PERFORM POST-LOGIN-MENU
-           END-IF.
+           IF WS-USER-COUNT = 0
+              DISPLAY "No accounts exist. Please create one first."
+              EXIT PARAGRAPH
+           END-IF
 
-       LOGIN-ATTEMPT.
-           PERFORM DISPLAY-AND-WRITE WITH "Please enter your username:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE TO WS-LOGIN-USERNAME
-
-           PERFORM DISPLAY-AND-WRITE WITH "Please enter your password:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE TO WS-LOGIN-PASSWORD
-
+           PERFORM GET-LOGIN-CREDENTIALS
            PERFORM VALIDATE-LOGIN
 
-           IF WS-LOGIN-SUCCESS = 'N'
-              PERFORM DISPLAY-AND-WRITE WITH "Incorrect username/password, please try again"
+           IF WS-LOGIN-SUCCESS = 'Y'
+              DISPLAY "You have successfully logged in!"
+              PERFORM USER-DASHBOARD
+           ELSE
+              DISPLAY "Incorrect username/password, please try again."
            END-IF.
+
+       GET-LOGIN-CREDENTIALS.
+           DISPLAY "Enter username: " WITH NO ADVANCING
+           ACCEPT WS-LOGIN-USERNAME
+           DISPLAY "Enter password: " WITH NO ADVANCING
+           ACCEPT WS-LOGIN-PASSWORD.
 
        VALIDATE-LOGIN.
            MOVE 'N' TO WS-LOGIN-SUCCESS
@@ -240,58 +200,77 @@
                IF WS-LOGIN-USERNAME = WS-USER-ID(WS-J)
                    IF WS-LOGIN-PASSWORD(1:12) = WS-USER-PASS(WS-J)
                        MOVE 'Y' TO WS-LOGIN-SUCCESS
-                       MOVE WS-LOGIN-USERNAME TO WS-CURRENT-USER
                        EXIT PERFORM
                    END-IF
                END-IF
            END-PERFORM.
 
        *>--------------------------------------------------
-       POST-LOGIN-MENU.
-           PERFORM POST-LOGIN-OPTIONS UNTIL WS-LOGGED-IN = 'N'.
-
-       POST-LOGIN-OPTIONS.
-           PERFORM DISPLAY-AND-WRITE WITH "Search for a job"
-           PERFORM DISPLAY-AND-WRITE WITH "Find someone you know"
-           PERFORM DISPLAY-AND-WRITE WITH "Learn a new skill"
-           PERFORM DISPLAY-AND-WRITE WITH "Enter your choice:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE(1:1) TO WS-MENU-CHOICE
+       USER-DASHBOARD.
+           DISPLAY " "
+           DISPLAY "========================================"
+           DISPLAY "           MAIN MENU"
+           DISPLAY "========================================"
+           DISPLAY "1. Search for a Job/Internship"
+           DISPLAY "2. Find Someone You Know"
+           DISPLAY "3. Learn a New Skill"
+           DISPLAY "4. Exit System"
+           DISPLAY " "
+           DISPLAY "Please select an option (1-4): " WITH NO ADVANCING
+           ACCEPT WS-MENU-CHOICE
 
            EVALUATE WS-MENU-CHOICE
-               WHEN '1'
-                   PERFORM DISPLAY-AND-WRITE WITH "Job search/internship is under construction."
-               WHEN '2'
-                   PERFORM DISPLAY-AND-WRITE WITH "Find someone you know is under construction."
-               WHEN '3'
-                   PERFORM LEARN-SKILL-MENU
-               WHEN OTHER
-                   MOVE 'N' TO WS-LOGGED-IN
+              WHEN '1' PERFORM JOB-SEARCH-OPTION
+              WHEN '2' PERFORM FIND-SOMEONE-OPTION
+              WHEN '3' PERFORM LEARN-SKILL-OPTION
+              WHEN '4' DISPLAY "Logging out... Goodbye!"
+              WHEN OTHER DISPLAY "Invalid option."
            END-EVALUATE.
 
-       *>--------------------------------------------------
-       LEARN-SKILL-MENU.
-           PERFORM DISPLAY-AND-WRITE WITH "Learn a New Skill:"
-           PERFORM DISPLAY-AND-WRITE WITH "Skill 1"
-           PERFORM DISPLAY-AND-WRITE WITH "Skill 2"
-           PERFORM DISPLAY-AND-WRITE WITH "Skill 3"
-           PERFORM DISPLAY-AND-WRITE WITH "Skill 4"
-           PERFORM DISPLAY-AND-WRITE WITH "Skill 5"
-           PERFORM DISPLAY-AND-WRITE WITH "Go Back"
-           PERFORM DISPLAY-AND-WRITE WITH "Enter your choice:"
-           PERFORM READ-INPUT
-           MOVE WS-INPUT-LINE(1:1) TO WS-SKILL-CHOICE
+       JOB-SEARCH-OPTION.
+           DISPLAY "*** UNDER CONSTRUCTION ***".
+           ACCEPT WS-USER-CHOICE.
 
-           EVALUATE WS-SKILL-CHOICE
-               WHEN '1' THROUGH '5'
-                   PERFORM DISPLAY-AND-WRITE WITH "This skill is under construction."
-               WHEN '6'
-                   CONTINUE
-               WHEN OTHER
-                   CONTINUE
-           END-EVALUATE.
+       FIND-SOMEONE-OPTION.
+           DISPLAY "*** UNDER CONSTRUCTION ***".
+           ACCEPT WS-USER-CHOICE.
 
-       *>--------------------------------------------------
+       LEARN-SKILL-OPTION.
+       DISPLAY "Select a skill to learn:".
+       DISPLAY "1. Python Programming"
+       DISPLAY "2. Data Analysis with Excel"
+       DISPLAY "3. Digital Marketing"
+       DISPLAY "4. Graphic Design"
+       DISPLAY "5. Public Speaking"
+       DISPLAY "6. Return to Main Menu"
+       ACCEPT WS-SKILL-CHOICE
+
+       EVALUATE WS-SKILL-CHOICE
+           WHEN '1'
+               DISPLAY "This skill is under construction."
+           WHEN '2'
+               DISPLAY "This skill is under construction."
+           WHEN '3'
+               DISPLAY "This skill is under construction."
+           WHEN '4'
+               DISPLAY "This skill is under construction."
+           WHEN '5'
+               DISPLAY "This skill is under construction."
+           WHEN '6'
+               DISPLAY "Returning to Main Menu..."
+           WHEN OTHER
+               DISPLAY "Invalid choice."
+       END-EVALUATE.
+
+       GET-NEW-USERNAME.
+           DISPLAY "Enter username: " WITH NO ADVANCING
+           ACCEPT WS-USERNAME.
+
+       GET-NEW-PASSWORD.
+           DISPLAY "Enter password: " WITH NO ADVANCING
+           ACCEPT WS-PASSWORD
+           PERFORM VALIDATE-PASSWORD.
+
        VALIDATE-PASSWORD.
            MOVE 'N' TO WS-HAS-UPPER WS-HAS-DIGIT WS-HAS-SPECIAL WS-VALID-LENGTH
            MOVE 0  TO WS-PASSWORD-LENGTH
@@ -305,6 +284,7 @@
            END-PERFORM
 
            IF WS-PASSWORD-LENGTH < 8 OR WS-PASSWORD-LENGTH > 12
+               DISPLAY "Password must be 8-12 characters"
                EXIT PARAGRAPH
            END-IF
 
@@ -323,15 +303,15 @@
                   WS-CHAR = '&' OR WS-CHAR = '*'
                    MOVE 'Y' TO WS-HAS-SPECIAL
                END-IF
-           END-PERFORM.
+           END-PERFORM
 
-       *>--------------------------------------------------
-       *> UTILITY PARAGRAPHS FOR FILE I/O
-       *>--------------------------------------------------
-       READ-INPUT.
-           READ INPUT-FILE INTO INPUT-REC
-           MOVE INPUT-REC TO WS-INPUT-LINE.
-
-       DISPLAY-AND-WRITE.
-           DISPLAY WS-OUTPUT-LINE
-           WRITE OUTPUT-REC FROM WS-OUTPUT-LINE.
+           IF WS-HAS-UPPER = 'N'
+               DISPLAY "Password needs uppercase"
+           END-IF
+           IF WS-HAS-DIGIT = 'N'
+               DISPLAY "Password needs digit"
+           END-IF
+           IF WS-HAS-SPECIAL = 'N'
+               DISPLAY "Password needs special (!,@,#,$,...)"
+           END-IF.
+           
