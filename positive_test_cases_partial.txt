@@ -1,0 +1,22 @@
+1
+testuser3
+TestPass3!
+5
+Maria
+Garcia
+Tech Institute
+Engineering
+2026
+Passionate engineering student with hands-on project experience.
+Y
+Lab Assistant
+Tech Institute Materials Lab
+Fall 2023
+Conducted materials testing and documented experimental procedures.
+N
+Y
+Bachelor of Engineering
+Tech Institute
+2022-2026
+N
+4
