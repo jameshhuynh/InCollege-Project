@@ -1,0 +1,104 @@
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+--- Your Profile ---
+Name: John Doe
+University: USF
+Major: Computer Science
+Graduation Year: 2025
+About Me: Enthusiastic developer always learning new things.
+Experience:
+Title: Software Intern
+Company: Tech Corp
+Dates: Summer 2024
+Description: Developed tools for internal testing.
+Education:
+Degree: Bachelor of Science
+University: USF
+Years: 2021-2025
+--------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+Logging out...
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Goodbye!
+rofile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+Please select an option (1-5): --- Your Profile ---
+Name: John Doe
+University: USF
+Major: Computer Science
+Graduation Year: 2025
+About Me: Enthusiastic developer always learning new things.
+Experience:
+Title: Software Intern
+Company: Tech Corp
+Dates: Summer 2024
+Description: Developed tools for internal testing.
+Education:
+Degree: Bachelor of Science
+University: USF
+Years: 2021-2025
+--------------------
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+Please select an option (1-5): Logging out...
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): Goodbye!
