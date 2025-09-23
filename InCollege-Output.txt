@@ -1,0 +1,121 @@
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+--- Your Profile ---
+Name: John Smith
+University: Harvard University
+Major: Computer Science
+Graduation Year: 2025
+About Me: I am passionate about software development and artificial intelligence.
+Experience:
+Title: Software Engineering Intern
+Company: Google
+Dates: June 2024 - August 2
+Description: Developed machine learning models for search optimization.
+Title: Research Assistant
+Company: MIT AI Lab
+Dates: September 2023 - May
+Description: Conducted research on NLP and published findings.
+Education:
+Degree: Bachelor of Science
+University: Harvard University
+Years: 2021-2025
+Degree: High School Diploma
+University: Boston Latin School
+Years: 2017-2021
+--------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+User found!
+--- Your Profile ---
+Name: John Smith
+University: Harvard University
+Major: Computer Science
+Graduation Year: 2025
+About Me: I am passionate about software development and artificial intelligence.
+Experience:
+Title: Software Engineering Intern
+Company: Google
+Dates: June 2024 - August 2
+Description: Developed machine learning models for search optimization.
+Title: Research Assistant
+Company: MIT AI Lab
+Dates: September 2023 - May
+Description: Conducted research on NLP and published findings.
+Education:
+Degree: Bachelor of Science
+University: Harvard University
+Years: 2021-2025
+Degree: High School Diploma
+University: Boston Latin School
+Years: 2017-2021
+--------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+Select a skill to learn:
+1. Python Programming
+2. Data Analysis with Excel
+3. Digital Marketing
+4. Graphic Design
+5. Public Speaking
+6. Return to Main Menu
+Returning to Main Menu...
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. Logout
+Logging out...
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Goodbye!
