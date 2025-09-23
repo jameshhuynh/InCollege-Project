@@ -392,6 +392,7 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
        SAVE-PROFILE-TO-FILE.
+           PERFORM DELETE-EXISTING-PROFILE
            OPEN EXTEND PROFILE-FILE
            IF WS-PROF-STATUS = "00"
                STRING PF-USERNAME DELIMITED BY SIZE ,
@@ -430,6 +431,23 @@
                CLOSE PROFILE-FILE
            END-IF.
 
+       DELETE-EXISTING-PROFILE.
+           OPEN INPUT PROFILE-FILE
+           IF WS-PROF-STATUS = "00"
+               OPEN OUTPUT PROFILE-FILE
+               PERFORM READ-PROFILE-RECORD
+               PERFORM UNTIL WS-PROF-STATUS NOT = "00"
+                  UNSTRING PROFILE-REC DELIMITED BY ","
+                      INTO WS-REC-USERNAME
+                  END-UNSTRING
+                  IF WS-REC-USERNAME NOT = PF-USERNAME
+                      WRITE PROFILE-REC
+                  END-IF
+                  PERFORM READ-PROFILE-RECORD
+               END-PERFORM
+               CLOSE PROFILE-FILE
+           END-IF.
+
        LOAD-PROFILE-FOR-USER.
            OPEN INPUT PROFILE-FILE
            IF WS-PROF-STATUS = "00"
@@ -451,24 +469,6 @@
               CLOSE PROFILE-FILE
            END-IF.
 
-
-           OPEN INPUT PROFILE-FILE
-           IF WS-PROF-STATUS = "00"
-              PERFORM READ-PROFILE-RECORD
-              PERFORM UNTIL WS-PROF-STATUS NOT = "00"
-                  MOVE 1 TO WS-I
-                  PERFORM UNTIL WS-I > 20 OR PROFILE-REC(WS-I:1) = ","
-                     ADD 1 TO WS-I
-                  END-PERFORM
-                  IF WS-I <= 20 AND PF-USERNAME = PROFILE-REC(1:WS-I - 1)
-                     PERFORM PARSE-PROFILE-REC
-                     EXIT PERFORM
-                  END-IF
-                  PERFORM READ-PROFILE-RECORD
-              END-PERFORM
-              CLOSE PROFILE-FILE
-           END-IF.
-
        READ-PROFILE-RECORD.
            READ PROFILE-FILE INTO PROFILE-REC.
 
@@ -477,9 +477,33 @@
               INTO WS-REC-USERNAME
                    PF-FIRST-NAME
                    PF-LAST-NAME
-                   PF-MAJOR
                    PF-UNIVERSITY
+                   PF-MAJOR
+                   PF-GRAD-YEAR
                    PF-ABOUT-ME
+                   PF-EXP-COUNT
+                   PF-EXP-TITLE(1)
+                   PF-EXP-COMPANY(1)
+                   PF-EXP-DATES(1)
+                   PF-EXP-DESC(1)
+                   PF-EXP-TITLE(2)
+                   PF-EXP-COMPANY(2)
+                   PF-EXP-DATES(2)
+                   PF-EXP-DESC(2)
+                   PF-EXP-TITLE(3)
+                   PF-EXP-COMPANY(3)
+                   PF-EXP-DATES(3)
+                   PF-EXP-DESC(3)
+                   PF-EDU-COUNT
+                   PF-EDU-DEGREE(1)
+                   PF-EDU-UNIV(1)
+                   PF-EDU-YEARS(1)
+                   PF-EDU-DEGREE(2)
+                   PF-EDU-UNIV(2)
+                   PF-EDU-YEARS(2)
+                   PF-EDU-DEGREE(3)
+                   PF-EDU-UNIV(3)
+                   PF-EDU-YEARS(3)
            END-UNSTRING.
 
 
@@ -581,8 +605,8 @@
                *>--- Education ---
                IF PF-EDU-COUNT > 0
                    MOVE SPACES TO WS-DISPLAY-MESSAGE
-                   *>MOVE "Education:" TO WS-DISPLAY-MESSAGE
-                   *>PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   MOVE "Education:" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
 
                    PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > PF-EDU-COUNT
                        MOVE SPACES TO WS-DISPLAY-MESSAGE
@@ -630,20 +654,13 @@
                    AT END
                        MOVE 'Y' TO EOF-PROFILE
                    NOT AT END
-                       UNSTRING PROFILE-REC DELIMITED BY ","
-                           INTO WS-REC-USERNAME
-                                PF-FIRST-NAME
-                                PF-LAST-NAME
-                                PF-UNIVERSITY
-                                PF-MAJOR
-                                PF-GRAD-YEAR
-                                PF-ABOUT-ME
-                       END-UNSTRING
+                       PERFORM PARSE-PROFILE-REC
 
                        IF PF-FIRST-NAME = WS-SEARCH-FIRST
                           AND PF-LAST-NAME = WS-SEARCH-LAST
                           MOVE 'Y' TO WS-NAME-FOUND
-                          DISPLAY "User found!"
+                          MOVE "User found!" TO WS-DISPLAY-MESSAGE
+                          PERFORM WRITE-OUTPUT-AND-DISPLAY
                           PERFORM DISPLAY-PROFILE
                           MOVE 'Y' TO EOF-PROFILE
                        END-IF
@@ -652,7 +669,8 @@
            CLOSE PROFILE-FILE
 
            IF WS-NAME-FOUND = 'N'
-               DISPLAY "No one by that name could be found."
+               MOVE "No one by that name could be found." TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
 
 
@@ -671,31 +689,31 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY
            MOVE "6. Return to Main Menu" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           ACCEPT WS-SKILL-CHOICE
+       ACCEPT WS-SKILL-CHOICE
 
-           EVALUATE WS-SKILL-CHOICE
-               WHEN '1'
+       EVALUATE WS-SKILL-CHOICE
+           WHEN '1'
                    MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '2'
+           WHEN '2'
                    MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '3'
+           WHEN '3'
                    MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '4'
+           WHEN '4'
                    MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '5'
+           WHEN '5'
                    MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '6'
+           WHEN '6'
                    MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN OTHER
+           WHEN OTHER
                    MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
-           END-EVALUATE.
+       END-EVALUATE.
 
        GET-NEW-USERNAME.
            DISPLAY "Enter username: " WITH NO ADVANCING
@@ -753,7 +771,7 @@
                MOVE "Password needs special (!,@,#,$,...)" TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
-
+           
        WRITE-OUTPUT-AND-DISPLAY.
            DISPLAY WS-DISPLAY-MESSAGE(1:FUNCTION LENGTH(FUNCTION TRIM(WS-DISPLAY-MESSAGE)))
            MOVE WS-DISPLAY-MESSAGE TO OUT-REC
