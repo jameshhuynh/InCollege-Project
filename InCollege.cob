@@ -382,19 +382,22 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY
            MOVE "3. Search for User" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "4. Learn a New Skill" TO WS-DISPLAY-MESSAGE
+           MOVE "4. View My Pending Connection Requests" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "5. Logout" TO WS-DISPLAY-MESSAGE
+           MOVE "5. Learn a New Skill" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           DISPLAY "Please select an option (1-5): " WITH NO ADVANCING
+           MOVE "6. Logout" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           DISPLAY "Please select an option (1-6): " WITH NO ADVANCING
            ACCEPT WS-MENU-CHOICE
 
            EVALUATE WS-MENU-CHOICE
               WHEN '1' PERFORM CREATE-EDIT-PROFILE
               WHEN '2' PERFORM DISPLAY-PROFILE
               WHEN '3' PERFORM FIND-SOMEONE-OPTION
-              WHEN '4' PERFORM LEARN-SKILL-OPTION
-              WHEN '5' MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
+              WHEN '4' PERFORM VIEW-PENDING-REQUESTS
+              WHEN '5' PERFORM LEARN-SKILL-OPTION
+              WHEN '6' MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
                        MOVE SPACES TO PF-USERNAME
               WHEN OTHER MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
@@ -586,5 +589,36 @@
               END-PERFORM
               CLOSE REQUESTS-FILE
            END-IF.
+
+       VIEW-PENDING-REQUESTS.
+           MOVE "=== PENDING CONNECTION REQUESTS ===" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           
+           MOVE 0 TO WS-I
+           MOVE 'N' TO WS-NAME-FOUND
+           
+           PERFORM VARYING WS-J FROM 1 BY 1 UNTIL WS-J > WS-REQUESTS-COUNT
+               IF WS-REQ-RECIP(WS-J) = PF-USERNAME
+                   ADD 1 TO WS-I
+                   MOVE 'Y' TO WS-NAME-FOUND
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   STRING "Request #" DELIMITED BY SIZE
+                          WS-I DELIMITED BY SIZE
+                          ": " DELIMITED BY SIZE
+                          WS-REQ-SENDER(WS-J) DELIMITED BY SIZE
+                          " wants to connect with you" DELIMITED BY SIZE
+                          INTO WS-DISPLAY-MESSAGE
+                   END-STRING
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               END-IF
+           END-PERFORM
+           
+           IF WS-NAME-FOUND = 'N'
+               MOVE "You have no pending connection requests." TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+           
+           MOVE "--------------------" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
        END PROGRAM STUDENT-SYSTEM.
