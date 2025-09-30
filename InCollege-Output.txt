@@ -1,0 +1,122 @@
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+--- Your Profile ---
+Name: John Smith
+University: Harvard University
+Major: Computer Science
+Graduation Year: 2025
+About Me: I am passionate about software development and artificial intelligence.
+Experience:
+Title: Software Engineering Intern
+Company: Google
+Dates: June 2024 - August 2
+Description: Developed machine learning models for search optimization.
+Title: Research Assistant
+Company: MIT AI Lab
+Dates: September 2023 - May
+Description: Conducted research on NLP and published findings.
+Education:
+Degree: Bachelor of Science
+University: Harvard University
+Years: 2021-2025
+Degree: High School Diploma
+University: Boston Latin School
+Years: 2017-2021
+--------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+User found!
+--- Your Profile ---
+Name: John Smith
+University: Harvard University
+Major: Computer Science
+Graduation Year: 2025
+About Me: I am passionate about software development and artificial intelligence.
+Experience:
+Title: Software Engineering Intern
+Company: Google
+Dates: June 2024 - August 2
+Description: Developed machine learning models for search optimization.
+Title: Research Assistant
+Company: MIT AI Lab
+Dates: September 2023 - May
+Description: Conducted research on NLP and published findings.
+Education:
+Degree: Bachelor of Science
+University: Harvard University
+Years: 2021-2025
+Degree: High School Diploma
+University: Boston Latin School
+Years: 2017-2021
+--------------------
+Cannot send connection request to yourself.
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+--- Pending Connection Requests ---
+You have no pending connection requests at this time.
+-----------------------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+Logging out...
+======================================
+WELCOME TO INCOLLEGE
+======================================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Goodbye!
