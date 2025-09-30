@@ -1,4 +1,4 @@
-
+       *> IDAHO-5: Combined Account System + Login Menu + Profile Management + Connection Requests
        IDENTIFICATION DIVISION.
        PROGRAM-ID. STUDENT-SYSTEM.
        AUTHOR. STUDENT.
@@ -18,9 +18,9 @@
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-OUT-STATUS.
 
-           SELECT REQUESTS-FILE ASSIGN TO "requests.dat"
+           SELECT CONNECTION-FILE ASSIGN TO "connections.dat"
                ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-REQ-STATUS.
+               FILE STATUS IS WS-CONN-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
@@ -31,17 +31,17 @@
        01  PROFILE-REC    PIC X(900).
 
        FD  OUTPUT-FILE.
-       01  OUT-REC        PIC X(300).
+       01  OUT-REC        PIC X(100).
 
-       FD  REQUESTS-FILE.
-       01  REQ-REC        PIC X(50).
+       FD  CONNECTION-FILE.
+       01  CONN-REC       PIC X(50).
 
        WORKING-STORAGE SECTION.
        01  WS-USER-CHOICE     PIC X.
        01  WS-FILE-STATUS     PIC XX VALUE SPACES.
        01  WS-PROF-STATUS     PIC XX VALUE SPACES.
        01  WS-OUT-STATUS      PIC XX VALUE SPACES.
-       01  WS-REQ-STATUS      PIC XX VALUE SPACES.
+       01  WS-CONN-STATUS     PIC XX VALUE SPACES.
        01  WS-INPUT-LINE      PIC X(200).
        01  WS-OUTPUT-LINE     PIC X(300).
 
@@ -97,38 +97,38 @@
 
        01  WS-PROF-KEYLINE        PIC X(80).
        01  WS-TEMP-NUMERIC        PIC 9(4).
-       01  WS-DISPLAY-MESSAGE     PIC X(300).
+       01  WS-DISPLAY-MESSAGE     PIC X(100).
        01  WS-REC-USERNAME        PIC X(20).
 
-       01 WS-SEARCH-NAME          PIC X(40).
-       01 WS-SEARCH-FIRST         PIC X(20).
-       01 WS-SEARCH-LAST          PIC X(20).
-       01 WS-NAME-FOUND           PIC X VALUE "N".
-       01 EOF-PROFILE             PIC X VALUE 'N'.
+       01  WS-SEARCH-NAME         PIC X(40).
+       01  WS-SEARCH-FIRST        PIC X(20).
+       01  WS-SEARCH-LAST         PIC X(20).
+       01  WS-NAME-FOUND          PIC X VALUE "N".
+       01  EOF-PROFILE            PIC X VALUE 'N'.
 
-       *> Connection requests variables
-       01 WS-SENDER-USERNAME      PIC X(20).
-       01 WS-RECIP-USERNAME       PIC X(20).
-       01 WS-REQUESTS-COUNT       PIC 99 VALUE 0.
+       01  WS-CONN-COUNT          PIC 99 VALUE 0.
+       01  WS-REC-SENDER          PIC X(20).
+       01  WS-REC-RECIPIENT       PIC X(20).
 
-       01 WS-REQUESTS-TABLE.
-          05 WS-REQUEST-ENTRY OCCURS 100 TIMES.
-             10 WS-REQ-SENDER      PIC X(20).
-             10 WS-REQ-RECIP       PIC X(20).
+       01 EOF-CONNECTION          PIC X VALUE 'N'.
+       01 WS-CONN-ALREADY-EXISTS       PIC X VALUE 'N'.
+       01 WS-CONN-RECEIVED-FROM-USER   PIC X VALUE 'N'.
 
-       01 EOF-REQUESTS            PIC X VALUE 'N'.
-       01 WS-REQUEST-EXISTS       PIC X VALUE 'N'.
+       01  WS-TEMP-FIRST        PIC X(30).
+       01  WS-TEMP-LAST         PIC X(30).
+       01 WS-OUTPUT-LINE-TEMP PIC X(50).
+
+
+
+
 
        PROCEDURE DIVISION.
-
        MAIN-PARA.
            PERFORM ENSURE-FILES
            PERFORM LOAD-USERS
-           PERFORM LOAD-REQUESTS
            OPEN OUTPUT OUTPUT-FILE
            PERFORM MAIN-MENU UNTIL WS-CONTINUE = 'N'
            CLOSE OUTPUT-FILE
-           PERFORM SAVE-REQUESTS
            STOP RUN.
 
        ENSURE-FILES.
@@ -148,12 +148,12 @@
               CLOSE PROFILE-FILE
            END-IF
 
-           OPEN INPUT REQUESTS-FILE
-           IF WS-REQ-STATUS = "35"
-              OPEN OUTPUT REQUESTS-FILE
-              CLOSE REQUESTS-FILE
+           OPEN INPUT CONNECTION-FILE
+           IF WS-CONN-STATUS = "35"
+              OPEN OUTPUT CONNECTION-FILE
+              CLOSE CONNECTION-FILE
            ELSE
-              CLOSE REQUESTS-FILE
+              CLOSE CONNECTION-FILE
            END-IF.
 
        LOAD-USERS.
@@ -168,33 +168,8 @@
               CLOSE USER-FILE
            END-IF.
 
-       LOAD-REQUESTS.
-           MOVE 0 TO WS-REQUESTS-COUNT
-           OPEN INPUT REQUESTS-FILE
-           IF WS-REQ-STATUS = "00"
-              PERFORM READ-REQUEST-RECORD
-              PERFORM UNTIL WS-REQ-STATUS NOT = "00"
-                  PERFORM PARSE-REQUEST-REC
-                  PERFORM READ-REQUEST-RECORD
-              END-PERFORM
-              CLOSE REQUESTS-FILE
-           END-IF.
-
        READ-USER-RECORD.
-           READ USER-FILE INTO USER-REC
-           AT END
-               MOVE "EOF" TO WS-FILE-STATUS
-           NOT AT END
-               MOVE "00" TO WS-FILE-STATUS
-           END-READ.
-
-       READ-REQUEST-RECORD.
-           READ REQUESTS-FILE INTO REQ-REC
-           AT END
-               MOVE "EOF" TO WS-REQ-STATUS
-           NOT AT END
-               MOVE "00" TO WS-REQ-STATUS
-           END-READ.
+           READ USER-FILE INTO USER-REC.
 
        PARSE-USER-RECORD.
            MOVE 1 TO WS-I
@@ -207,13 +182,6 @@
                COMPUTE WS-J = WS-I + 1
                MOVE USER-REC(WS-J:12) TO WS-USER-PASS(WS-USER-COUNT)
            END-IF.
-
-       PARSE-REQUEST-REC.
-           UNSTRING REQ-REC DELIMITED BY ","
-               INTO WS-REQ-SENDER(WS-REQUESTS-COUNT + 1)
-                    WS-REQ-RECIP(WS-REQUESTS-COUNT + 1)
-           END-UNSTRING
-           ADD 1 TO WS-REQUESTS-COUNT.
 
        MAIN-MENU.
            MOVE "======================================" TO WS-DISPLAY-MESSAGE
@@ -267,9 +235,6 @@
                       PERFORM SAVE-USER-TO-FILE
                       MOVE "Account created successfully!" TO WS-DISPLAY-MESSAGE
                       PERFORM WRITE-OUTPUT-AND-DISPLAY
-                   ELSE
-                      MOVE "Password does not meet requirements." TO WS-DISPLAY-MESSAGE
-                      PERFORM WRITE-OUTPUT-AND-DISPLAY
                    END-IF
                ELSE
                    MOVE "Username already exists!" TO WS-DISPLAY-MESSAGE
@@ -298,34 +263,6 @@
                END-IF
            END-PERFORM.
 
-       GET-NEW-USERNAME.
-           DISPLAY "Enter desired username: " WITH NO ADVANCING
-           ACCEPT WS-USERNAME.
-
-       GET-NEW-PASSWORD.
-           DISPLAY "Enter password: " WITH NO ADVANCING
-           ACCEPT WS-PASSWORD
-           *> Basic password checks (examples)
-           MOVE 'N' TO WS-HAS-UPPER
-           MOVE 'N' TO WS-HAS-DIGIT
-           MOVE 'N' TO WS-HAS-SPECIAL
-           MOVE 'N' TO WS-VALID-LENGTH
-           COMPUTE WS-PASSWORD-LENGTH = FUNCTION LENGTH(WS-PASSWORD)
-           IF WS-PASSWORD-LENGTH >= 8
-              MOVE 'Y' TO WS-VALID-LENGTH
-           END-IF
-           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > WS-PASSWORD-LENGTH
-               MOVE WS-PASSWORD(WS-I:1) TO WS-CHAR
-               IF WS-CHAR >= 'A' AND WS-CHAR <= 'Z'
-                  MOVE 'Y' TO WS-HAS-UPPER
-               ELSE IF WS-CHAR >= '0' AND WS-CHAR <= '9'
-                  MOVE 'Y' TO WS-HAS-DIGIT
-               ELSE
-                  *> treat other chars as special for simplicity
-                  MOVE 'Y' TO WS-HAS-SPECIAL
-               END-IF
-           END-PERFORM.
-
        LOGIN-USER.
            MOVE "=== USER LOGIN ===" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
@@ -344,7 +281,7 @@
               PERFORM WRITE-OUTPUT-AND-DISPLAY
               MOVE WS-LOGIN-USERNAME TO PF-USERNAME
               PERFORM LOAD-PROFILE-FOR-USER
-              PERFORM USER-DASHBOARD UNTIL WS-MENU-CHOICE = '5'
+              PERFORM USER-DASHBOARD UNTIL WS-MENU-CHOICE = '6'
            ELSE
               MOVE "Incorrect username/password, please try again." TO WS-DISPLAY-MESSAGE
               PERFORM WRITE-OUTPUT-AND-DISPLAY
@@ -362,11 +299,186 @@
                IF WS-LOGIN-USERNAME = WS-USER-ID(WS-J)
                    IF WS-LOGIN-PASSWORD(1:12) = WS-USER-PASS(WS-J)
                        MOVE 'Y' TO WS-LOGIN-SUCCESS
-                       MOVE WS-LOGIN-USERNAME TO WS-REC-USERNAME
                        EXIT PERFORM
                    END-IF
                END-IF
            END-PERFORM.
+
+       USER-DASHBOARD.
+           DISPLAY " "
+           MOVE "======================================" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "MAIN MENU" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "======================================" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "1. Create/Edit My Profile" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "2. View My Profile" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "3. Search for User" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "4. Learn a New Skill" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "5. View My Pending Connection Requests" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "6. Logout" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           DISPLAY "Please select an option (1-6): " WITH NO ADVANCING
+           ACCEPT WS-MENU-CHOICE
+
+           EVALUATE WS-MENU-CHOICE
+              WHEN '1' PERFORM CREATE-EDIT-PROFILE
+              WHEN '2' PERFORM DISPLAY-PROFILE
+              WHEN '3' PERFORM FIND-SOMEONE-OPTION
+              WHEN '4' PERFORM LEARN-SKILL-OPTION
+              WHEN '5' PERFORM VIEW-PENDING-CONNECTIONS
+              WHEN '6' MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+                       MOVE SPACES TO PF-USERNAME
+              WHEN OTHER MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
+                         PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-EVALUATE.
+
+
+ CREATE-EDIT-PROFILE.
+           MOVE "--- Create/Edit Profile ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           DISPLAY "Enter First Name: " WITH NO ADVANCING
+           ACCEPT PF-FIRST-NAME
+           IF PF-FIRST-NAME = SPACES
+              MOVE "First name is required. Keeping previous value if any." TO WS-DISPLAY-MESSAGE
+              PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+
+           DISPLAY "Enter Last Name: " WITH NO ADVANCING
+           ACCEPT PF-LAST-NAME
+           IF PF-LAST-NAME = SPACES
+              MOVE "Last name is required. Keeping previous value if any." TO WS-DISPLAY-MESSAGE
+              PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+
+           DISPLAY "Enter University/College Attended: " WITH NO ADVANCING
+           ACCEPT PF-UNIVERSITY
+           IF PF-UNIVERSITY = SPACES
+              MOVE "University is required. Keeping previous value if any." TO WS-DISPLAY-MESSAGE
+              PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+
+           DISPLAY "Enter Major: " WITH NO ADVANCING
+           ACCEPT PF-MAJOR
+           IF PF-MAJOR = SPACES
+              MOVE "Major is required. Keeping previous value if any." TO WS-DISPLAY-MESSAGE
+              PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+
+           DISPLAY "Enter Graduation Year (YYYY): " WITH NO ADVANCING
+           ACCEPT WS-INPUT-LINE
+           IF FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) > 1900 AND FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) < 2100
+              MOVE FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) TO PF-GRAD-YEAR
+           ELSE
+              MOVE "Invalid graduation year. Keeping previous value if any." TO WS-DISPLAY-MESSAGE
+              PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+
+           DISPLAY "Enter About Me (optional, max 200 chars, enter blank line to skip): " WITH NO ADVANCING
+           ACCEPT PF-ABOUT-ME
+
+           MOVE 0 TO PF-EXP-COUNT
+           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > 3
+              DISPLAY "Add Experience (optional, max 3 entries. Enter 'DONE' to finish): " WITH NO ADVANCING
+              ACCEPT WS-INPUT-LINE
+              IF WS-INPUT-LINE(1:4) = "DONE"
+                 EXIT PERFORM
+              ELSE
+                 ADD 1 TO PF-EXP-COUNT
+                 MOVE WS-INPUT-LINE TO PF-EXP-TITLE(WS-I)
+                 DISPLAY "Experience #" WS-I " - Company/Organization: " WITH NO ADVANCING
+                 ACCEPT PF-EXP-COMPANY(WS-I)
+                 DISPLAY "Experience #" WS-I " - Dates (e.g., Summer 2024): " WITH NO ADVANCING
+                 ACCEPT PF-EXP-DATES(WS-I)
+                 DISPLAY "Experience #" WS-I " - Description (optional, blank to skip): " WITH NO ADVANCING
+                 ACCEPT PF-EXP-DESC(WS-I)
+              END-IF
+           END-PERFORM
+
+           MOVE 0 TO PF-EDU-COUNT
+           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > 3
+              DISPLAY "Add Education (optional, max 3 entries. Enter Degree here or enter 'DONE' to finish): " WITH NO ADVANCING
+              ACCEPT WS-INPUT-LINE
+              IF WS-INPUT-LINE(1:4) = "DONE"
+                 EXIT PERFORM
+              ELSE
+                 ADD 1 TO PF-EDU-COUNT
+                 MOVE WS-INPUT-LINE TO PF-EDU-DEGREE(WS-I)
+                 DISPLAY "Education #" WS-I " - University/College: " WITH NO ADVANCING
+                 ACCEPT PF-EDU-UNIV(WS-I)
+                 DISPLAY "Education #" WS-I " - Years Attended (e.g., 2023-2025): " WITH NO ADVANCING
+                 ACCEPT PF-EDU-YEARS(WS-I)
+              END-IF
+           END-PERFORM
+
+           PERFORM SAVE-PROFILE-TO-FILE
+           MOVE "Profile saved successfully!" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY.
+
+       SAVE-PROFILE-TO-FILE.
+           PERFORM DELETE-EXISTING-PROFILE
+           OPEN EXTEND PROFILE-FILE
+           IF WS-PROF-STATUS = "00"
+               STRING PF-USERNAME DELIMITED BY SIZE ,
+                   PF-FIRST-NAME DELIMITED BY SIZE ,
+                   PF-LAST-NAME DELIMITED BY SIZE ,
+                   PF-UNIVERSITY DELIMITED BY SIZE ,
+                   PF-MAJOR DELIMITED BY SIZE ,
+                   PF-GRAD-YEAR DELIMITED BY SIZE ,
+                   PF-ABOUT-ME DELIMITED BY SIZE ,
+                   PF-EXP-COUNT DELIMITED BY SIZE ,
+                   PF-EXP-TITLE (1) DELIMITED BY SIZE ,
+                   PF-EXP-COMPANY (1) DELIMITED BY SIZE ,
+                   PF-EXP-DATES (1) DELIMITED BY SIZE ,
+                   PF-EXP-DESC (1) DELIMITED BY SIZE ,
+                   PF-EXP-TITLE (2) DELIMITED BY SIZE ,
+                   PF-EXP-COMPANY (2) DELIMITED BY SIZE ,
+                   PF-EXP-DATES (2) DELIMITED BY SIZE ,
+                   PF-EXP-DESC (2) DELIMITED BY SIZE ,
+                   PF-EXP-TITLE (3) DELIMITED BY SIZE ,
+                   PF-EXP-COMPANY (3) DELIMITED BY SIZE ,
+                   PF-EXP-DATES (3) DELIMITED BY SIZE ,
+                   PF-EXP-DESC (3) DELIMITED BY SIZE ,
+                   PF-EDU-COUNT DELIMITED BY SIZE ,
+                   PF-EDU-DEGREE (1) DELIMITED BY SIZE ,
+                   PF-EDU-UNIV (1) DELIMITED BY SIZE ,
+                   PF-EDU-YEARS (1) DELIMITED BY SIZE ,
+                   PF-EDU-DEGREE (2) DELIMITED BY SIZE ,
+                   PF-EDU-UNIV (2) DELIMITED BY SIZE ,
+                   PF-EDU-YEARS (2) DELIMITED BY SIZE ,
+                   PF-EDU-DEGREE (3) DELIMITED BY SIZE ,
+                   PF-EDU-UNIV (3) DELIMITED BY SIZE ,
+                   PF-EDU-YEARS (3) DELIMITED BY SIZE
+                   INTO PROFILE-REC
+               END-STRING
+               WRITE PROFILE-REC
+               CLOSE PROFILE-FILE
+           END-IF.
+
+       DELETE-EXISTING-PROFILE.
+           OPEN INPUT PROFILE-FILE
+           IF WS-PROF-STATUS = "00"
+               OPEN OUTPUT PROFILE-FILE
+               PERFORM READ-PROFILE-RECORD
+               PERFORM UNTIL WS-PROF-STATUS NOT = "00"
+                  UNSTRING PROFILE-REC DELIMITED BY ","
+                      INTO WS-REC-USERNAME
+                  END-UNSTRING
+                  IF WS-REC-USERNAME NOT = PF-USERNAME
+                      WRITE PROFILE-REC
+                  END-IF
+                  PERFORM READ-PROFILE-RECORD
+               END-PERFORM
+               CLOSE PROFILE-FILE
+           END-IF.
 
        LOAD-PROFILE-FOR-USER.
            OPEN INPUT PROFILE-FILE
@@ -388,8 +500,7 @@
               END-PERFORM
               CLOSE PROFILE-FILE
            END-IF.
-
-       READ-PROFILE-RECORD.
+      READ-PROFILE-RECORD.
            READ PROFILE-FILE INTO PROFILE-REC.
 
        PARSE-PROFILE-REC.
@@ -426,102 +537,146 @@
                    PF-EDU-YEARS(3)
            END-UNSTRING.
 
-       USER-DASHBOARD.
-           DISPLAY " "
-           MOVE "======================================" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "MAIN MENU" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "======================================" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "1. Create/Edit My Profile" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "2. View My Profile" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "3. Search for User" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "4. View My Pending Connection Requests" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "5. Learn a New Skill" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "6. Logout" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           DISPLAY "Please select an option (1-6): " WITH NO ADVANCING
-           ACCEPT WS-MENU-CHOICE
-
-           EVALUATE WS-MENU-CHOICE
-              WHEN '1' PERFORM CREATE-EDIT-PROFILE
-              WHEN '2' PERFORM DISPLAY-PROFILE
-              WHEN '3' PERFORM FIND-SOMEONE-OPTION
-              WHEN '4' PERFORM VIEW-PENDING-REQUESTS
-              WHEN '5' PERFORM LEARN-SKILL-OPTION
-              WHEN '6' MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
-                       PERFORM WRITE-OUTPUT-AND-DISPLAY
-                       MOVE SPACES TO PF-USERNAME
-              WHEN OTHER MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
-                         PERFORM WRITE-OUTPUT-AND-DISPLAY
-           END-EVALUATE.
-
-       CREATE-EDIT-PROFILE.
-           MOVE "=== CREATE / EDIT PROFILE ===" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           DISPLAY "Enter first name: " WITH NO ADVANCING
-           ACCEPT PF-FIRST-NAME
-           DISPLAY "Enter last name: " WITH NO ADVANCING
-           ACCEPT PF-LAST-NAME
-           DISPLAY "Enter university: " WITH NO ADVANCING
-           ACCEPT PF-UNIVERSITY
-           DISPLAY "Enter major: " WITH NO ADVANCING
-           ACCEPT PF-MAJOR
-           DISPLAY "Enter graduation year: " WITH NO ADVANCING
-           ACCEPT PF-GRAD-YEAR
-           DISPLAY "Enter short about-me (one line): " WITH NO ADVANCING
-           ACCEPT PF-ABOUT-ME
-           MOVE "Profile saved." TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
        DISPLAY-PROFILE.
-           MOVE "=== PROFILE ===" TO WS-DISPLAY-MESSAGE
+           MOVE "--- Your Profile ---" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           STRING "Username: " DELIMITED BY SIZE PF-USERNAME DELIMITED BY SIZE
-                  INTO WS-OUTPUT-LINE
-           END-STRING
-           MOVE WS-OUTPUT-LINE TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "Name: " TO WS-DISPLAY-MESSAGE
-           STRING PF-FIRST-NAME DELIMITED BY SIZE " " DELIMITED BY SIZE PF-LAST-NAME DELIMITED BY SIZE
-                  INTO WS-OUTPUT-LINE
-           END-STRING
-           MOVE WS-OUTPUT-LINE TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "University: " TO WS-DISPLAY-MESSAGE
-           STRING PF-UNIVERSITY DELIMITED BY SIZE INTO WS-OUTPUT-LINE END-STRING
-           MOVE WS-OUTPUT-LINE TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "Major: " TO WS-DISPLAY-MESSAGE
-           STRING PF-MAJOR DELIMITED BY SIZE INTO WS-OUTPUT-LINE END-STRING
-           MOVE WS-OUTPUT-LINE TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "Graduation Year: " TO WS-DISPLAY-MESSAGE
-           STRING PF-GRAD-YEAR DELIMITED BY SIZE INTO WS-OUTPUT-LINE END-STRING
-           MOVE WS-OUTPUT-LINE TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
-       LEARN-SKILL-OPTION.
-           MOVE "=== LEARN A SKILL ===" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "Feature not implemented yet." TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY.
+           IF PF-FIRST-NAME = SPACES AND PF-LAST-NAME = SPACES
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "No profile found for user: " DELIMITED BY SIZE
+                      PF-USERNAME DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           ELSE
+               *>--- Name ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Name: " DELIMITED BY SIZE
+                      FUNCTION TRIM(PF-FIRST-NAME) DELIMITED BY SIZE
+                      " " DELIMITED BY SIZE
+                      FUNCTION TRIM(PF-LAST-NAME) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
 
+               *>--- University ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "University: " DELIMITED BY SIZE
+                      FUNCTION TRIM(PF-UNIVERSITY) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- Major ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Major: " DELIMITED BY SIZE
+                      FUNCTION TRIM(PF-MAJOR) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- Graduation Year ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Graduation Year: " DELIMITED BY SIZE
+                      PF-GRAD-YEAR DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- About Me ---
+               IF PF-ABOUT-ME NOT = SPACES
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   STRING "About Me: " DELIMITED BY SIZE
+                          FUNCTION TRIM(PF-ABOUT-ME) DELIMITED BY SIZE
+                          INTO WS-DISPLAY-MESSAGE
+                   END-STRING
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               END-IF
+
+               *>--- Experience ---
+               IF PF-EXP-COUNT > 0
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   MOVE "Experience:" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                   PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > PF-EXP-COUNT
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Title: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EXP-TITLE(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Company: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EXP-COMPANY(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Dates: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EXP-DATES(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       IF PF-EXP-DESC(WS-I) NOT = SPACES
+                           MOVE SPACES TO WS-DISPLAY-MESSAGE
+                           STRING "Description: " DELIMITED BY SIZE
+                                  FUNCTION TRIM(PF-EXP-DESC(WS-I)) DELIMITED BY SIZE
+                                  INTO WS-DISPLAY-MESSAGE
+                           END-STRING
+                           PERFORM WRITE-OUTPUT-AND-DISPLAY
+                       END-IF
+                   END-PERFORM
+               END-IF
+
+               *>--- Education ---
+               IF PF-EDU-COUNT > 0
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   MOVE "Education:" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                   PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > PF-EDU-COUNT
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Degree: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EDU-DEGREE(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "University: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EDU-UNIV(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Years: " DELIMITED BY SIZE
+                              FUNCTION TRIM(PF-EDU-YEARS(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   END-PERFORM
+               END-IF
+           END-IF
+
+           MOVE "--------------------" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY.
        FIND-SOMEONE-OPTION.
            DISPLAY "Enter full name to search (e.g., John Doe): " WITH NO ADVANCING
            ACCEPT WS-SEARCH-NAME
-
+           MOVE FUNCTION TRIM(WS-SEARCH-NAME) TO WS-SEARCH-NAME
            UNSTRING WS-SEARCH-NAME DELIMITED BY SPACE
                INTO WS-SEARCH-FIRST
                     WS-SEARCH-LAST
            END-UNSTRING
 
+           DISPLAY "DEBUG WS-SEARCH-FIRST = '" WS-SEARCH-FIRST "'"
+           DISPLAY "DEBUG WS-SEARCH-LAST = '" WS-SEARCH-LAST "'"
            MOVE 'N' TO WS-NAME-FOUND
            MOVE 'N' TO EOF-PROFILE
 
@@ -539,10 +694,10 @@
                           MOVE "User found!" TO WS-DISPLAY-MESSAGE
                           PERFORM WRITE-OUTPUT-AND-DISPLAY
                           PERFORM DISPLAY-PROFILE
-                          PERFORM PROMPT-SEND-CONNECTION
+                          PERFORM SEND-CONNECTION-REQUEST-OFFER
                           MOVE 'Y' TO EOF-PROFILE
                        END-IF
-               END-READ
+           END-READ
            END-PERFORM
            CLOSE PROFILE-FILE
 
@@ -551,123 +706,239 @@
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
 
-       PROMPT-SEND-CONNECTION.
-           MOVE "1. Send Connection Request" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           MOVE "2. Back to Main Menu" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           DISPLAY "Enter your choice: " WITH NO ADVANCING
+       SEND-CONNECTION-REQUEST-OFFER.
+           DISPLAY "1. Send Connection Request"
+           DISPLAY "2. Back to Main Menu"
+           DISPLAY "Enter your choice (1-2): " WITH NO ADVANCING
            ACCEPT WS-MENU-CHOICE
+
            EVALUATE WS-MENU-CHOICE
-              WHEN '1'
-                   MOVE PF-USERNAME TO WS-RECIP-USERNAME
-                   MOVE WS-REC-USERNAME TO WS-SENDER-USERNAME
+               WHEN '1'
                    PERFORM SEND-CONNECTION-REQUEST
-              WHEN '2'
-                   MOVE "Returning to main menu..." TO WS-DISPLAY-MESSAGE
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-              WHEN OTHER
-                   MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
+               WHEN OTHER
+                   MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
 
        SEND-CONNECTION-REQUEST.
-           IF WS-SENDER-USERNAME = WS-RECIP-USERNAME
-              MOVE "You cannot send a connection request to yourself." TO WS-DISPLAY-MESSAGE
+           *> Check if sending to self
+           IF PF-USERNAME = WS-REC-USERNAME
+              MOVE "Cannot send connection request to yourself." TO WS-DISPLAY-MESSAGE
               PERFORM WRITE-OUTPUT-AND-DISPLAY
               EXIT PARAGRAPH
            END-IF
 
+           *> Validate request constraints
            PERFORM CHECK-EXISTING-CONNECTIONS
 
-           IF WS-DISPLAY-MESSAGE NOT = SPACE
+           IF WS-CONN-ALREADY-EXISTS = 'Y'
+               MOVE "You are already connected with this user." TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
-               EXIT PARAGRAPH
-           END-IF
+           ELSE
+               IF WS-CONN-RECEIVED-FROM-USER = 'Y'
+                   MOVE "This user has already sent you a connection request." TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               ELSE
+                   PERFORM SAVE-CONNECTION-REQUEST
 
-           IF WS-REQUEST-EXISTS = 'Y'
-               PERFORM WRITE-OUTPUT-AND-DISPLAY
-               EXIT PARAGRAPH
-           END-IF
+                   *> Trim and build full name
+                   MOVE FUNCTION TRIM(WS-SEARCH-FIRST) TO WS-TEMP-FIRST
+                   MOVE FUNCTION TRIM(WS-SEARCH-LAST)  TO WS-TEMP-LAST
 
-           ADD 1 TO WS-REQUESTS-COUNT
-           MOVE WS-SENDER-USERNAME TO WS-REQ-SENDER(WS-REQUESTS-COUNT)
-           MOVE WS-RECIP-USERNAME TO WS-REQ-RECIP(WS-REQUESTS-COUNT)
+                   STRING WS-TEMP-FIRST DELIMITED BY SPACE
+                          " "          DELIMITED BY SPACE
+                          WS-TEMP-LAST DELIMITED BY SPACE
+                          INTO WS-OUTPUT-LINE-TEMP
+                   END-STRING
 
-           MOVE "Connection request sent to " TO WS-DISPLAY-MESSAGE
-           STRING WS-DISPLAY-MESSAGE DELIMITED BY SIZE 
-                  WS-RECIP-USERNAME DELIMITED BY SIZE 
-                  '.' DELIMITED BY SIZE
-                  INTO WS-DISPLAY-MESSAGE
-           END-STRING
+                   *> Build final message
+                   STRING "Connection request sent to " DELIMITED BY SIZE
+                       WS-OUTPUT-LINE-TEMP            DELIMITED BY SPACE
+                          INTO WS-DISPLAY-MESSAGE
+                   END-STRING
 
-           PERFORM WRITE-OUTPUT-AND-DISPLAY.
+                   DISPLAY "DEBUG WS-OUTPUT-LINE: '" WS-OUTPUT-LINE "'"
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               END-IF
+           END-IF.
 
        CHECK-EXISTING-CONNECTIONS.
-           MOVE SPACE TO WS-DISPLAY-MESSAGE
-           MOVE 'N' TO WS-REQUEST-EXISTS
-
-           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > WS-REQUESTS-COUNT
-               IF (WS-REQ-SENDER(WS-I) = WS-RECIP-USERNAME AND WS-REQ-RECIP(WS-I) = WS-SENDER-USERNAME)
-                  MOVE "This user has already sent you a connection request." TO WS-DISPLAY-MESSAGE
-                  MOVE 'Y' TO WS-REQUEST-EXISTS
-                  EXIT PERFORM
-               ELSE
-                  IF (WS-REQ-SENDER(WS-I) = WS-SENDER-USERNAME AND WS-REQ-RECIP(WS-I) = WS-RECIP-USERNAME)
-                      MOVE "You have already sent a connection request to this user." TO WS-DISPLAY-MESSAGE
-                      MOVE 'Y' TO WS-REQUEST-EXISTS
-                      EXIT PERFORM
-                  END-IF
+           MOVE 'N' TO WS-CONN-ALREADY-EXISTS WS-CONN-RECEIVED-FROM-USER
+           OPEN INPUT CONNECTION-FILE
+           PERFORM READ-CONNECTION
+           PERFORM UNTIL EOF-CONNECTION = 'Y'
+               IF WS-REC-SENDER = PF-USERNAME AND WS-REC-RECIPIENT = WS-SEARCH-FIRST
+                   MOVE 'Y' TO WS-CONN-ALREADY-EXISTS
+               ELSE IF WS-REC-SENDER = WS-SEARCH-FIRST AND WS-REC-RECIPIENT = PF-USERNAME
+                   MOVE 'Y' TO WS-CONN-RECEIVED-FROM-USER
                END-IF
-           END-PERFORM.
+               PERFORM READ-CONNECTION
+           END-PERFORM
+           CLOSE CONNECTION-FILE.
+
+       READ-CONNECTION.
+           READ CONNECTION-FILE INTO CONN-REC
+               AT END
+                  MOVE 'Y' TO EOF-CONNECTION
+               NOT AT END
+                  UNSTRING CONN-REC DELIMITED BY ","
+                     INTO WS-REC-SENDER
+                          WS-REC-RECIPIENT
+                  END-UNSTRING
+           END-READ.
+
+       SAVE-CONNECTION-REQUEST.
+           OPEN EXTEND CONNECTION-FILE
+           IF WS-CONN-STATUS = "00"
+              STRING PF-USERNAME DELIMITED BY SIZE
+                     "," DELIMITED BY SIZE
+                     WS-SEARCH-FIRST DELIMITED BY SIZE
+                     INTO CONN-REC
+              END-STRING
+              WRITE CONN-REC
+              CLOSE CONNECTION-FILE
+           END-IF.
+
+       VIEW-PENDING-CONNECTIONS.
+            MOVE "--- Pending Connection Requests ---" TO WS-DISPLAY-MESSAGE
+            PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+            MOVE 'N' TO WS-NAME-FOUND
+            MOVE 0 TO WS-I
+
+            OPEN INPUT CONNECTION-FILE
+            MOVE 'N' TO EOF-CONNECTION
+
+            PERFORM READ-CONNECTION
+            PERFORM UNTIL EOF-CONNECTION = 'Y'
+                IF WS-REC-RECIPIENT = PF-USERNAME
+                    ADD 1 TO WS-I
+                    MOVE 'Y' TO WS-NAME-FOUND
+                    MOVE SPACES TO WS-DISPLAY-MESSAGE
+                    STRING "Request #" DELIMITED BY SIZE
+                           WS-I DELIMITED BY SIZE
+                           ": " DELIMITED BY SIZE
+                           WS-REC-SENDER DELIMITED BY SIZE
+                           " wants to connect with you" DELIMITED BY SIZE
+                           INTO WS-DISPLAY-MESSAGE
+                    END-STRING
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+                END-IF
+                PERFORM READ-CONNECTION
+            END-PERFORM
+
+            CLOSE CONNECTION-FILE
+
+            IF WS-NAME-FOUND = 'N'
+                MOVE "You have no pending connection requests at this time." TO WS-DISPLAY-MESSAGE
+                PERFORM WRITE-OUTPUT-AND-DISPLAY
+            END-IF
+
+            MOVE "-----------------------------------" TO WS-DISPLAY-MESSAGE
+            PERFORM WRITE-OUTPUT-AND-DISPLAY.
+
+
+       LEARN-SKILL-OPTION.
+           MOVE "Select a skill to learn:" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "1. Python Programming" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "2. Data Analysis with Excel" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "3. Digital Marketing" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "4. Graphic Design" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "5. Public Speaking" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "6. Return to Main Menu" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           ACCEPT WS-SKILL-CHOICE
+
+           EVALUATE WS-SKILL-CHOICE
+               WHEN '1'
+                       MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '2'
+                       MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '3'
+                       MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '4'
+                       MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '5'
+                       MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '6'
+                       MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN OTHER
+                       MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-EVALUATE.
+
+       GET-NEW-USERNAME.
+           DISPLAY "Enter username: " WITH NO ADVANCING
+           ACCEPT WS-USERNAME.
+
+       GET-NEW-PASSWORD.
+           DISPLAY "Enter password: " WITH NO ADVANCING
+           ACCEPT WS-PASSWORD
+           PERFORM VALIDATE-PASSWORD.
+
+       VALIDATE-PASSWORD.
+           MOVE 'N' TO WS-HAS-UPPER WS-HAS-DIGIT WS-HAS-SPECIAL WS-VALID-LENGTH
+           MOVE 0  TO WS-PASSWORD-LENGTH
+
+           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > LENGTH OF WS-PASSWORD
+               IF WS-PASSWORD(WS-I:1) NOT = SPACE
+                   ADD 1 TO WS-PASSWORD-LENGTH
+               ELSE
+                   EXIT PERFORM
+               END-IF
+           END-PERFORM
+
+           IF WS-PASSWORD-LENGTH < 8 OR WS-PASSWORD-LENGTH > 12
+               MOVE "Password must be 8-12 characters" TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
+           END-IF
+
+           MOVE 'Y' TO WS-VALID-LENGTH
+
+           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > WS-PASSWORD-LENGTH
+               MOVE WS-PASSWORD(WS-I:1) TO WS-CHAR
+               IF WS-CHAR >= 'A' AND WS-CHAR <= 'Z'
+                   MOVE 'Y' TO WS-HAS-UPPER
+               END-IF
+               IF WS-CHAR >= '0' AND WS-CHAR <= '9'
+                   MOVE 'Y' TO WS-HAS-DIGIT
+               END-IF
+               IF WS-CHAR = '!' OR WS-CHAR = '@' OR WS-CHAR = '#' OR
+                  WS-CHAR = '$' OR WS-CHAR = '%' OR WS-CHAR = '^' OR
+                  WS-CHAR = '&' OR WS-CHAR = '*'
+                   MOVE 'Y' TO WS-HAS-SPECIAL
+               END-IF
+           END-PERFORM
+
+           IF WS-HAS-UPPER = 'N'
+               MOVE "Password needs uppercase" TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+           IF WS-HAS-DIGIT = 'N'
+               MOVE "Password needs digit" TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF
+           IF WS-HAS-SPECIAL = 'N'
+               MOVE "Password needs special (!,@,#,$,...)" TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF.
 
        WRITE-OUTPUT-AND-DISPLAY.
-           DISPLAY WS-DISPLAY-MESSAGE(1:FUNCTION LENGTH(WS-DISPLAY-MESSAGE))
+           DISPLAY WS-DISPLAY-MESSAGE(1:FUNCTION LENGTH(FUNCTION TRIM(WS-DISPLAY-MESSAGE)))
            MOVE WS-DISPLAY-MESSAGE TO OUT-REC
            WRITE OUT-REC.
 
-       SAVE-REQUESTS.
-           OPEN OUTPUT REQUESTS-FILE
-           IF WS-REQ-STATUS = "00"
-              PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > WS-REQUESTS-COUNT
-                  STRING WS-REQ-SENDER(WS-I) DELIMITED BY SIZE "," DELIMITED BY SIZE
-                         WS-REQ-RECIP(WS-I) DELIMITED BY SIZE INTO REQ-REC
-                  END-STRING
-                  WRITE REQ-REC
-              END-PERFORM
-              CLOSE REQUESTS-FILE
-           END-IF.
-
-       VIEW-PENDING-REQUESTS.
-           MOVE "=== PENDING CONNECTION REQUESTS ===" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY
-           
-           MOVE 0 TO WS-I
-           MOVE 'N' TO WS-NAME-FOUND
-           
-           PERFORM VARYING WS-J FROM 1 BY 1 UNTIL WS-J > WS-REQUESTS-COUNT
-               IF WS-REQ-RECIP(WS-J) = PF-USERNAME
-                   ADD 1 TO WS-I
-                   MOVE 'Y' TO WS-NAME-FOUND
-                   MOVE SPACES TO WS-DISPLAY-MESSAGE
-                   STRING "Request #" DELIMITED BY SIZE
-                          WS-I DELIMITED BY SIZE
-                          ": " DELIMITED BY SIZE
-                          WS-REQ-SENDER(WS-J) DELIMITED BY SIZE
-                          " wants to connect with you" DELIMITED BY SIZE
-                          INTO WS-DISPLAY-MESSAGE
-                   END-STRING
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-               END-IF
-           END-PERFORM
-           
-           IF WS-NAME-FOUND = 'N'
-               MOVE "You have no pending connection requests." TO WS-DISPLAY-MESSAGE
-               PERFORM WRITE-OUTPUT-AND-DISPLAY
-           END-IF
-           
-           MOVE "--------------------" TO WS-DISPLAY-MESSAGE
-           PERFORM WRITE-OUTPUT-AND-DISPLAY.
-
        END PROGRAM STUDENT-SYSTEM.
-
