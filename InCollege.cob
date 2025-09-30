@@ -368,6 +368,64 @@
                END-IF
            END-PERFORM.
 
+       LOAD-PROFILE-FOR-USER.
+           OPEN INPUT PROFILE-FILE
+           IF WS-PROF-STATUS = "00"
+              PERFORM READ-PROFILE-RECORD
+              PERFORM UNTIL WS-PROF-STATUS NOT = "00"
+                 *>Get just the username from the record
+                 UNSTRING PROFILE-REC DELIMITED BY ","
+                     INTO WS-REC-USERNAME
+                 END-UNSTRING
+
+                 *>Compare with logged-in username
+                 IF WS-REC-USERNAME = PF-USERNAME
+                     PERFORM PARSE-PROFILE-REC
+                     EXIT PERFORM
+                 END-IF
+
+                 PERFORM READ-PROFILE-RECORD
+              END-PERFORM
+              CLOSE PROFILE-FILE
+           END-IF.
+
+       READ-PROFILE-RECORD.
+           READ PROFILE-FILE INTO PROFILE-REC.
+
+       PARSE-PROFILE-REC.
+           UNSTRING PROFILE-REC DELIMITED BY ","
+              INTO WS-REC-USERNAME
+                   PF-FIRST-NAME
+                   PF-LAST-NAME
+                   PF-UNIVERSITY
+                   PF-MAJOR
+                   PF-GRAD-YEAR
+                   PF-ABOUT-ME
+                   PF-EXP-COUNT
+                   PF-EXP-TITLE(1)
+                   PF-EXP-COMPANY(1)
+                   PF-EXP-DATES(1)
+                   PF-EXP-DESC(1)
+                   PF-EXP-TITLE(2)
+                   PF-EXP-COMPANY(2)
+                   PF-EXP-DATES(2)
+                   PF-EXP-DESC(2)
+                   PF-EXP-TITLE(3)
+                   PF-EXP-COMPANY(3)
+                   PF-EXP-DATES(3)
+                   PF-EXP-DESC(3)
+                   PF-EDU-COUNT
+                   PF-EDU-DEGREE(1)
+                   PF-EDU-UNIV(1)
+                   PF-EDU-YEARS(1)
+                   PF-EDU-DEGREE(2)
+                   PF-EDU-UNIV(2)
+                   PF-EDU-YEARS(2)
+                   PF-EDU-DEGREE(3)
+                   PF-EDU-UNIV(3)
+                   PF-EDU-YEARS(3)
+           END-UNSTRING.
+
        USER-DASHBOARD.
            DISPLAY " "
            MOVE "======================================" TO WS-DISPLAY-MESSAGE
