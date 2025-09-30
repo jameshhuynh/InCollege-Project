@@ -1,0 +1,36 @@
+1
+User1
+Abc12345!
+2
+User1
+Abc12345!
+1
+John
+Smith
+Harvard University
+Computer Science
+2025
+I am passionate about software development and artificial intelligence.
+Software Engineering Intern
+Google
+June 2024 - August 2024
+Developed machine learning models for search optimization.
+Research Assistant
+MIT AI Lab
+September 2023 - May 2024
+Conducted research on NLP and published findings.
+DONE
+Bachelor of Science
+Harvard University
+2021-2025
+High School Diploma
+Boston Latin School
+2017-2021
+DONE
+2
+3
+John Smith
+1
+5
+6
+3
