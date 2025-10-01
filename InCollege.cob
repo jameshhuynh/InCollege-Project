@@ -106,6 +106,25 @@
        01  WS-NAME-FOUND          PIC X VALUE "N".
        01  EOF-PROFILE            PIC X VALUE 'N'.
 
+       01  WS-SEARCH-PROFILE.
+          05 SF-FIRST-NAME         PIC X(30).
+          05 SF-LAST-NAME          PIC X(30).
+          05 SF-UNIVERSITY         PIC X(50).
+          05 SF-MAJOR              PIC X(40).
+          05 SF-GRAD-YEAR          PIC 9(4).
+          05 SF-ABOUT-ME           PIC X(200).
+          05 SF-EXP-COUNT          PIC 9 VALUE 0.
+          05 SF-EXP OCCURS 3 TIMES.
+             10 SF-EXP-TITLE       PIC X(30).
+             10 SF-EXP-COMPANY     PIC X(30).
+             10 SF-EXP-DATES       PIC X(20).
+             10 SF-EXP-DESC        PIC X(100).
+          05 SF-EDU-COUNT          PIC 9 VALUE 0.
+          05 SF-EDU OCCURS 3 TIMES.
+             10 SF-EDU-DEGREE      PIC X(30).
+             10 SF-EDU-UNIV        PIC X(50).
+             10 SF-EDU-YEARS       PIC X(20).
+
        01  WS-CONN-COUNT          PIC 99 VALUE 0.
        01  WS-REC-SENDER          PIC X(20).
        01  WS-REC-RECIPIENT       PIC X(20).
@@ -336,6 +355,7 @@
               WHEN '6' MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
                        MOVE SPACES TO PF-USERNAME
+                       PERFORM CLEAR-PROFILE-DATA
               WHEN OTHER MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
                          PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
@@ -427,35 +447,35 @@
            PERFORM DELETE-EXISTING-PROFILE
            OPEN EXTEND PROFILE-FILE
            IF WS-PROF-STATUS = "00"
-               STRING PF-USERNAME DELIMITED BY SIZE ,
-                   PF-FIRST-NAME DELIMITED BY SIZE ,
-                   PF-LAST-NAME DELIMITED BY SIZE ,
-                   PF-UNIVERSITY DELIMITED BY SIZE ,
-                   PF-MAJOR DELIMITED BY SIZE ,
-                   PF-GRAD-YEAR DELIMITED BY SIZE ,
-                   PF-ABOUT-ME DELIMITED BY SIZE ,
-                   PF-EXP-COUNT DELIMITED BY SIZE ,
-                   PF-EXP-TITLE (1) DELIMITED BY SIZE ,
-                   PF-EXP-COMPANY (1) DELIMITED BY SIZE ,
-                   PF-EXP-DATES (1) DELIMITED BY SIZE ,
-                   PF-EXP-DESC (1) DELIMITED BY SIZE ,
-                   PF-EXP-TITLE (2) DELIMITED BY SIZE ,
-                   PF-EXP-COMPANY (2) DELIMITED BY SIZE ,
-                   PF-EXP-DATES (2) DELIMITED BY SIZE ,
-                   PF-EXP-DESC (2) DELIMITED BY SIZE ,
-                   PF-EXP-TITLE (3) DELIMITED BY SIZE ,
-                   PF-EXP-COMPANY (3) DELIMITED BY SIZE ,
-                   PF-EXP-DATES (3) DELIMITED BY SIZE ,
-                   PF-EXP-DESC (3) DELIMITED BY SIZE ,
-                   PF-EDU-COUNT DELIMITED BY SIZE ,
-                   PF-EDU-DEGREE (1) DELIMITED BY SIZE ,
-                   PF-EDU-UNIV (1) DELIMITED BY SIZE ,
-                   PF-EDU-YEARS (1) DELIMITED BY SIZE ,
-                   PF-EDU-DEGREE (2) DELIMITED BY SIZE ,
-                   PF-EDU-UNIV (2) DELIMITED BY SIZE ,
-                   PF-EDU-YEARS (2) DELIMITED BY SIZE ,
-                   PF-EDU-DEGREE (3) DELIMITED BY SIZE ,
-                   PF-EDU-UNIV (3) DELIMITED BY SIZE ,
+               STRING PF-USERNAME DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-FIRST-NAME DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-LAST-NAME DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-UNIVERSITY DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-MAJOR DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-GRAD-YEAR DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-ABOUT-ME DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-COUNT DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-TITLE (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-COMPANY (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DATES (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DESC (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-TITLE (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-COMPANY (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DATES (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DESC (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-TITLE (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-COMPANY (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DATES (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EXP-DESC (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-COUNT DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-DEGREE (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-UNIV (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-YEARS (1) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-DEGREE (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-UNIV (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-YEARS (2) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-DEGREE (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
+                   PF-EDU-UNIV (3) DELIMITED BY SIZE "," DELIMITED BY SIZE
                    PF-EDU-YEARS (3) DELIMITED BY SIZE
                    INTO PROFILE-REC
                END-STRING
@@ -478,9 +498,12 @@
                   PERFORM READ-PROFILE-RECORD
                END-PERFORM
                CLOSE PROFILE-FILE
+           ELSE
+               CLOSE PROFILE-FILE
            END-IF.
 
        LOAD-PROFILE-FOR-USER.
+           PERFORM CLEAR-PROFILE-DATA
            OPEN INPUT PROFILE-FILE
            IF WS-PROF-STATUS = "00"
               PERFORM READ-PROFILE-RECORD
@@ -500,6 +523,25 @@
               END-PERFORM
               CLOSE PROFILE-FILE
            END-IF.
+
+       CLEAR-PROFILE-DATA.
+           MOVE SPACES TO PF-FIRST-NAME
+           MOVE SPACES TO PF-LAST-NAME
+           MOVE SPACES TO PF-UNIVERSITY
+           MOVE SPACES TO PF-MAJOR
+           MOVE 0 TO PF-GRAD-YEAR
+           MOVE SPACES TO PF-ABOUT-ME
+           MOVE 0 TO PF-EXP-COUNT
+           MOVE 0 TO PF-EDU-COUNT
+           PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > 3
+               MOVE SPACES TO PF-EXP-TITLE(WS-I)
+               MOVE SPACES TO PF-EXP-COMPANY(WS-I)
+               MOVE SPACES TO PF-EXP-DATES(WS-I)
+               MOVE SPACES TO PF-EXP-DESC(WS-I)
+               MOVE SPACES TO PF-EDU-DEGREE(WS-I)
+               MOVE SPACES TO PF-EDU-UNIV(WS-I)
+               MOVE SPACES TO PF-EDU-YEARS(WS-I)
+           END-PERFORM.
       READ-PROFILE-RECORD.
            READ PROFILE-FILE INTO PROFILE-REC.
 
@@ -536,6 +578,44 @@
                    PF-EDU-UNIV(3)
                    PF-EDU-YEARS(3)
            END-UNSTRING.
+
+       PARSE-SEARCH-PROFILE-REC.
+           DISPLAY "DEBUG: Before UNSTRING: " PROFILE-REC(1:100)
+           UNSTRING PROFILE-REC DELIMITED BY ","
+              INTO WS-REC-USERNAME
+                   SF-FIRST-NAME
+                   SF-LAST-NAME
+                   SF-UNIVERSITY
+                   SF-MAJOR
+                   SF-GRAD-YEAR
+                   SF-ABOUT-ME
+                   SF-EXP-COUNT
+                   SF-EXP-TITLE(1)
+                   SF-EXP-COMPANY(1)
+                   SF-EXP-DATES(1)
+                   SF-EXP-DESC(1)
+                   SF-EXP-TITLE(2)
+                   SF-EXP-COMPANY(2)
+                   SF-EXP-DATES(2)
+                   SF-EXP-DESC(2)
+                   SF-EXP-TITLE(3)
+                   SF-EXP-COMPANY(3)
+                   SF-EXP-DATES(3)
+                   SF-EXP-DESC(3)
+                   SF-EDU-COUNT
+                   SF-EDU-DEGREE(1)
+                   SF-EDU-UNIV(1)
+                   SF-EDU-YEARS(1)
+                   SF-EDU-DEGREE(2)
+                   SF-EDU-UNIV(2)
+                   SF-EDU-YEARS(2)
+                   SF-EDU-DEGREE(3)
+                   SF-EDU-UNIV(3)
+                   SF-EDU-YEARS(3)
+           END-UNSTRING
+           DISPLAY "DEBUG: After UNSTRING - Username: '" WS-REC-USERNAME "'"
+           DISPLAY "DEBUG: After UNSTRING - First: '" SF-FIRST-NAME "'"
+           DISPLAY "DEBUG: After UNSTRING - Last: '" SF-LAST-NAME "'".
 
 
        DISPLAY-PROFILE.
@@ -666,6 +746,136 @@
 
            MOVE "--------------------" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY.
+
+       DISPLAY-SEARCH-PROFILE.
+           MOVE "--- Your Profile ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           IF SF-FIRST-NAME = SPACES AND SF-LAST-NAME = SPACES
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "No profile found for user: " DELIMITED BY SIZE
+                      WS-REC-USERNAME DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           ELSE
+               *>--- Name ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Name: " DELIMITED BY SIZE
+                      FUNCTION TRIM(SF-FIRST-NAME) DELIMITED BY SIZE
+                      " " DELIMITED BY SIZE
+                      FUNCTION TRIM(SF-LAST-NAME) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- University ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "University: " DELIMITED BY SIZE
+                      FUNCTION TRIM(SF-UNIVERSITY) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- Major ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Major: " DELIMITED BY SIZE
+                      FUNCTION TRIM(SF-MAJOR) DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- Graduation Year ---
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Graduation Year: " DELIMITED BY SIZE
+                      SF-GRAD-YEAR DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               *>--- About Me ---
+               IF SF-ABOUT-ME NOT = SPACES
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   STRING "About Me: " DELIMITED BY SIZE
+                          FUNCTION TRIM(SF-ABOUT-ME) DELIMITED BY SIZE
+                          INTO WS-DISPLAY-MESSAGE
+                   END-STRING
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               END-IF
+
+               *>--- Experience ---
+               IF SF-EXP-COUNT > 0
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   MOVE "Experience:" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                   PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > SF-EXP-COUNT
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Title: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EXP-TITLE(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Company: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EXP-COMPANY(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Dates: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EXP-DATES(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       IF SF-EXP-DESC(WS-I) NOT = SPACES
+                           MOVE SPACES TO WS-DISPLAY-MESSAGE
+                           STRING "Description: " DELIMITED BY SIZE
+                                  FUNCTION TRIM(SF-EXP-DESC(WS-I)) DELIMITED BY SIZE
+                                  INTO WS-DISPLAY-MESSAGE
+                           END-STRING
+                           PERFORM WRITE-OUTPUT-AND-DISPLAY
+                       END-IF
+                   END-PERFORM
+               END-IF
+
+               *>--- Education ---
+               IF SF-EDU-COUNT > 0
+                   MOVE SPACES TO WS-DISPLAY-MESSAGE
+                   MOVE "Education:" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                   PERFORM VARYING WS-I FROM 1 BY 1 UNTIL WS-I > SF-EDU-COUNT
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Degree: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EDU-DEGREE(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "University: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EDU-UNIV(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+                       MOVE SPACES TO WS-DISPLAY-MESSAGE
+                       STRING "Years: " DELIMITED BY SIZE
+                              FUNCTION TRIM(SF-EDU-YEARS(WS-I)) DELIMITED BY SIZE
+                              INTO WS-DISPLAY-MESSAGE
+                       END-STRING
+                       PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   END-PERFORM
+               END-IF
+           END-IF
+
+           MOVE "--------------------" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY.
+
        FIND-SOMEONE-OPTION.
            DISPLAY "Enter full name to search (e.g., John Doe): " WITH NO ADVANCING
            ACCEPT WS-SEARCH-NAME
@@ -681,19 +891,24 @@
            MOVE 'N' TO EOF-PROFILE
 
            OPEN INPUT PROFILE-FILE
+           DISPLAY "DEBUG: Profile file status: " WS-PROF-STATUS
            PERFORM UNTIL EOF-PROFILE = 'Y'
                READ PROFILE-FILE INTO PROFILE-REC
                    AT END
                        MOVE 'Y' TO EOF-PROFILE
                    NOT AT END
-                       PERFORM PARSE-PROFILE-REC
+                       DISPLAY "DEBUG: Read profile record: " PROFILE-REC(1:50)
+                       PERFORM PARSE-SEARCH-PROFILE-REC
+                       DISPLAY "DEBUG: Parsed SF-FIRST-NAME: '" SF-FIRST-NAME "'"
+                       DISPLAY "DEBUG: Parsed SF-LAST-NAME: '" SF-LAST-NAME "'"
+                       DISPLAY "DEBUG: Looking for: '" WS-SEARCH-FIRST "' and '" WS-SEARCH-LAST "'"
 
-                       IF PF-FIRST-NAME = WS-SEARCH-FIRST
-                          AND PF-LAST-NAME = WS-SEARCH-LAST
+                       IF SF-FIRST-NAME = WS-SEARCH-FIRST
+                          AND SF-LAST-NAME = WS-SEARCH-LAST
                           MOVE 'Y' TO WS-NAME-FOUND
                           MOVE "User found!" TO WS-DISPLAY-MESSAGE
                           PERFORM WRITE-OUTPUT-AND-DISPLAY
-                          PERFORM DISPLAY-PROFILE
+                          PERFORM DISPLAY-SEARCH-PROFILE
                           PERFORM SEND-CONNECTION-REQUEST-OFFER
                           MOVE 'Y' TO EOF-PROFILE
                        END-IF
@@ -792,7 +1007,7 @@
            IF WS-CONN-STATUS = "00"
               STRING PF-USERNAME DELIMITED BY SIZE
                      "," DELIMITED BY SIZE
-                     WS-SEARCH-FIRST DELIMITED BY SIZE
+                     WS-REC-USERNAME DELIMITED BY SIZE
                      INTO CONN-REC
               END-STRING
               WRITE CONN-REC
@@ -853,31 +1068,31 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY
            MOVE "6. Return to Main Menu" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           ACCEPT WS-SKILL-CHOICE
+       ACCEPT WS-SKILL-CHOICE
 
-           EVALUATE WS-SKILL-CHOICE
-               WHEN '1'
+       EVALUATE WS-SKILL-CHOICE
+           WHEN '1'
                        MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '2'
+           WHEN '2'
                        MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '3'
+           WHEN '3'
                        MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '4'
+           WHEN '4'
                        MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '5'
+           WHEN '5'
                        MOVE "This skill is under construction." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN '6'
+           WHEN '6'
                        MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-               WHEN OTHER
+           WHEN OTHER
                        MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
                        PERFORM WRITE-OUTPUT-AND-DISPLAY
-           END-EVALUATE.
+       END-EVALUATE.
 
        GET-NEW-USERNAME.
            DISPLAY "Enter username: " WITH NO ADVANCING
@@ -935,7 +1150,7 @@
                MOVE "Password needs special (!,@,#,$,...)" TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
-
+           
        WRITE-OUTPUT-AND-DISPLAY.
            DISPLAY WS-DISPLAY-MESSAGE(1:FUNCTION LENGTH(FUNCTION TRIM(WS-DISPLAY-MESSAGE)))
            MOVE WS-DISPLAY-MESSAGE TO OUT-REC
