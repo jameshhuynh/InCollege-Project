@@ -1,4 +1,4 @@
-       *> IDAHO-5: Combined Account System + Login Menu + Profile Management + Connection Requests
+*> IDAHO-5: Combined Account System + Login Menu + Profile Management + Connection Requests
        IDENTIFICATION DIVISION.
        PROGRAM-ID. STUDENT-SYSTEM.
        AUTHOR. STUDENT.
@@ -580,7 +580,6 @@
            END-UNSTRING.
 
        PARSE-SEARCH-PROFILE-REC.
-           DISPLAY "DEBUG: Before UNSTRING: " PROFILE-REC(1:100)
            UNSTRING PROFILE-REC DELIMITED BY ","
               INTO WS-REC-USERNAME
                    SF-FIRST-NAME
@@ -612,10 +611,7 @@
                    SF-EDU-DEGREE(3)
                    SF-EDU-UNIV(3)
                    SF-EDU-YEARS(3)
-           END-UNSTRING
-           DISPLAY "DEBUG: After UNSTRING - Username: '" WS-REC-USERNAME "'"
-           DISPLAY "DEBUG: After UNSTRING - First: '" SF-FIRST-NAME "'"
-           DISPLAY "DEBUG: After UNSTRING - Last: '" SF-LAST-NAME "'".
+           END-UNSTRING.
 
 
        DISPLAY-PROFILE.
@@ -885,23 +881,16 @@
                     WS-SEARCH-LAST
            END-UNSTRING
 
-           DISPLAY "DEBUG WS-SEARCH-FIRST = '" WS-SEARCH-FIRST "'"
-           DISPLAY "DEBUG WS-SEARCH-LAST = '" WS-SEARCH-LAST "'"
            MOVE 'N' TO WS-NAME-FOUND
            MOVE 'N' TO EOF-PROFILE
 
            OPEN INPUT PROFILE-FILE
-           DISPLAY "DEBUG: Profile file status: " WS-PROF-STATUS
            PERFORM UNTIL EOF-PROFILE = 'Y'
                READ PROFILE-FILE INTO PROFILE-REC
                    AT END
                        MOVE 'Y' TO EOF-PROFILE
                    NOT AT END
-                       DISPLAY "DEBUG: Read profile record: " PROFILE-REC(1:50)
                        PERFORM PARSE-SEARCH-PROFILE-REC
-                       DISPLAY "DEBUG: Parsed SF-FIRST-NAME: '" SF-FIRST-NAME "'"
-                       DISPLAY "DEBUG: Parsed SF-LAST-NAME: '" SF-LAST-NAME "'"
-                       DISPLAY "DEBUG: Looking for: '" WS-SEARCH-FIRST "' and '" WS-SEARCH-LAST "'"
 
                        IF SF-FIRST-NAME = WS-SEARCH-FIRST
                           AND SF-LAST-NAME = WS-SEARCH-LAST
@@ -972,21 +961,21 @@
                           INTO WS-DISPLAY-MESSAGE
                    END-STRING
 
-                   DISPLAY "DEBUG WS-OUTPUT-LINE: '" WS-OUTPUT-LINE "'"
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
                END-IF
            END-IF.
 
        CHECK-EXISTING-CONNECTIONS.
            MOVE 'N' TO WS-CONN-ALREADY-EXISTS WS-CONN-RECEIVED-FROM-USER
+           MOVE 'N' TO EOF-CONNECTION
            OPEN INPUT CONNECTION-FILE
            PERFORM READ-CONNECTION
            PERFORM UNTIL EOF-CONNECTION = 'Y'
-               IF WS-REC-SENDER = PF-USERNAME AND WS-REC-RECIPIENT = WS-SEARCH-FIRST
-                   MOVE 'Y' TO WS-CONN-ALREADY-EXISTS
-               ELSE IF WS-REC-SENDER = WS-SEARCH-FIRST AND WS-REC-RECIPIENT = PF-USERNAME
-                   MOVE 'Y' TO WS-CONN-RECEIVED-FROM-USER
-               END-IF
+                IF WS-REC-SENDER = PF-USERNAME AND WS-REC-RECIPIENT = WS-REC-USERNAME
+                    MOVE 'Y' TO WS-CONN-ALREADY-EXISTS
+                ELSE IF WS-REC-SENDER = WS-REC-USERNAME AND WS-REC-RECIPIENT = PF-USERNAME
+                    MOVE 'Y' TO WS-CONN-RECEIVED-FROM-USER
+                END-IF
                PERFORM READ-CONNECTION
            END-PERFORM
            CLOSE CONNECTION-FILE.
@@ -1150,10 +1139,11 @@
                MOVE "Password needs special (!,@,#,$,...)" TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
-           
+
        WRITE-OUTPUT-AND-DISPLAY.
            DISPLAY WS-DISPLAY-MESSAGE(1:FUNCTION LENGTH(FUNCTION TRIM(WS-DISPLAY-MESSAGE)))
            MOVE WS-DISPLAY-MESSAGE TO OUT-REC
            WRITE OUT-REC.
 
        END PROGRAM STUDENT-SYSTEM.
+       
