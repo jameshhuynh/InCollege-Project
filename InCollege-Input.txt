@@ -1,0 +1,28 @@
+1
+User1
+User123!
+2
+User1
+User123!
+1
+Barry
+Allen
+MIT
+Computer Engineering
+2027
+I love coding
+Software Engineer
+Google
+Summer 2025
+Developed AI learning models for optimization
+DONE
+Yale AI Research Lab
+Yale
+2023-2025
+DONE
+5
+1
+5
+2
+6
+3
