@@ -207,7 +207,7 @@
            IF WS-FILE-STATUS = "00"
               PERFORM READ-USER-RECORD
               PERFORM UNTIL WS-FILE-STATUS NOT = "00"
--                     OR WS-USER-COUNT >= WS-MAX-USERS
+                     OR WS-USER-COUNT >= WS-MAX-USERS
 
                   PERFORM PARSE-USER-RECORD
                   PERFORM READ-USER-RECORD
@@ -259,7 +259,7 @@
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
                WHEN OTHER
                    MOVE "Invalid choice. Please enter 1-3."
--                         TO WS-DISPLAY-MESSAGE
+                         TO WS-DISPLAY-MESSAGE
 
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
