@@ -1320,22 +1320,30 @@
                               MOVE FUNCTION TRIM(WS-REC-RECIPIENT)
                                 TO WS-FOUND-USERNAME
                               PERFORM DISPLAY-CONNECTION-DETAIL
+                              MOVE 'Y' TO WS-NAME-FOUND
                            ELSE IF FUNCTION TRIM(WS-REC-RECIPIENT) =
                                    FUNCTION TRIM(PF-USERNAME)
                               MOVE FUNCTION TRIM(WS-REC-SENDER)
                                 TO WS-FOUND-USERNAME
                               PERFORM DISPLAY-CONNECTION-DETAIL
+                              MOVE 'Y' TO WS-NAME-FOUND
                            END-IF
-                           MOVE 'Y' TO WS-NAME-FOUND
                        END-IF
                END-READ
            END-PERFORM
            CLOSE CONNECTION-FILE
 
            IF WS-NAME-FOUND = 'N'
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
                MOVE "You have no connections yet." TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
+           ELSE
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               MOVE "-------------------------------------"
+                 TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
+
 
        DISPLAY-CONNECTION-DETAIL.
            MOVE 'N' TO EOF-PROFILE
