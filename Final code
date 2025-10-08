@@ -411,7 +411,7 @@
 
 
 
-      
+
 
        CREATE-EDIT-PROFILE.
            MOVE "--- Create/Edit Profile ---" TO WS-DISPLAY-MESSAGE
@@ -1294,13 +1294,14 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
 
-              VIEW-MY-NETWORK.
+       VIEW-MY-NETWORK.
            MOVE SPACES TO WS-DISPLAY-MESSAGE
            MOVE "--- My Network ---" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
 
            MOVE 'N' TO WS-NAME-FOUND
            MOVE 'N' TO EOF-CONNECTION-FILE
+           MOVE 0 TO WS-CONN-COUNT
 
            OPEN INPUT CONNECTION-FILE
            PERFORM UNTIL EOF-CONNECTION-FILE = 'Y'
@@ -1308,20 +1309,25 @@
                    AT END
                        MOVE 'Y' TO EOF-CONNECTION-FILE
                    NOT AT END
-                       UNSTRING CONN-REC DELIMITED BY ","
-                           INTO WS-REC-SENDER
-                                WS-REC-RECIPIENT
-                                WS-CONN-STATUS-FLAG
-                       END-UNSTRING
+                       ADD 1 TO WS-CONN-COUNT
 
-                       *> Only display if logged-in user is sender
-                       IF FUNCTION TRIM(WS-CONN-STATUS-FLAG) = "CONNECTED"
-                          AND FUNCTION TRIM(WS-REC-SENDER) =
-                              FUNCTION TRIM(PF-USERNAME)
-                           MOVE FUNCTION TRIM(WS-REC-RECIPIENT)
-                             TO WS-FOUND-USERNAME
-                           PERFORM DISPLAY-CONNECTION-DETAIL
-                           MOVE 'Y' TO WS-NAME-FOUND
+                       *> Only process every other line (odd-numbered lines)
+                       IF FUNCTION MOD(WS-CONN-COUNT, 2) = 1
+                           UNSTRING CONN-REC DELIMITED BY ","
+                               INTO WS-REC-SENDER
+                                    WS-REC-RECIPIENT
+                                    WS-CONN-STATUS-FLAG
+                           END-UNSTRING
+
+                           *> Only show connections where current user is the SENDER
+                           IF FUNCTION TRIM(WS-CONN-STATUS-FLAG) = "CONNECTED"
+                              AND FUNCTION TRIM(WS-REC-SENDER) =
+                                  FUNCTION TRIM(PF-USERNAME)
+                               MOVE FUNCTION TRIM(WS-REC-RECIPIENT)
+                                 TO WS-FOUND-USERNAME
+                               PERFORM DISPLAY-CONNECTION-DETAIL
+                               MOVE 'Y' TO WS-NAME-FOUND
+                           END-IF
                        END-IF
                END-READ
            END-PERFORM
