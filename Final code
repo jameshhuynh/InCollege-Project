@@ -1294,8 +1294,7 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY.
 
 
-       VIEW-MY-NETWORK.
-                  VIEW-MY-NETWORK.
+              VIEW-MY-NETWORK.
            MOVE SPACES TO WS-DISPLAY-MESSAGE
            MOVE "--- My Network ---" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
@@ -1315,7 +1314,7 @@
                                 WS-CONN-STATUS-FLAG
                        END-UNSTRING
 
-                       *> Only display if the logged-in user is the sender
+                       *> Only display if logged-in user is sender
                        IF FUNCTION TRIM(WS-CONN-STATUS-FLAG) = "CONNECTED"
                           AND FUNCTION TRIM(WS-REC-SENDER) =
                               FUNCTION TRIM(PF-USERNAME)
@@ -1340,10 +1339,8 @@
            END-IF.
 
 
-
        DISPLAY-CONNECTION-DETAIL.
            MOVE 'N' TO EOF-PROFILE
-           CLOSE PROFILE-FILE
            OPEN INPUT PROFILE-FILE
            PERFORM UNTIL EOF-PROFILE = 'Y'
                READ PROFILE-FILE INTO PROFILE-REC
@@ -1367,10 +1364,13 @@
                                   INTO WS-DISPLAY-MESSAGE
                            END-STRING
                            PERFORM WRITE-OUTPUT-AND-DISPLAY
+                           *> Stop after one match to prevent duplicates
+                           MOVE 'Y' TO EOF-PROFILE
                        END-IF
                END-READ
            END-PERFORM
            CLOSE PROFILE-FILE.
+
 
        DELETE-PENDING-REQUEST.
             OPEN INPUT CONNECTION-FILE
