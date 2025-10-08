@@ -1295,6 +1295,7 @@
 
 
        VIEW-MY-NETWORK.
+                  VIEW-MY-NETWORK.
            MOVE SPACES TO WS-DISPLAY-MESSAGE
            MOVE "--- My Network ---" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
@@ -1314,20 +1315,14 @@
                                 WS-CONN-STATUS-FLAG
                        END-UNSTRING
 
+                       *> Only display if the logged-in user is the sender
                        IF FUNCTION TRIM(WS-CONN-STATUS-FLAG) = "CONNECTED"
-                           IF FUNCTION TRIM(WS-REC-SENDER) =
+                          AND FUNCTION TRIM(WS-REC-SENDER) =
                               FUNCTION TRIM(PF-USERNAME)
-                              MOVE FUNCTION TRIM(WS-REC-RECIPIENT)
-                                TO WS-FOUND-USERNAME
-                              PERFORM DISPLAY-CONNECTION-DETAIL
-                              MOVE 'Y' TO WS-NAME-FOUND
-                           ELSE IF FUNCTION TRIM(WS-REC-RECIPIENT) =
-                                   FUNCTION TRIM(PF-USERNAME)
-                              MOVE FUNCTION TRIM(WS-REC-SENDER)
-                                TO WS-FOUND-USERNAME
-                              PERFORM DISPLAY-CONNECTION-DETAIL
-                              MOVE 'Y' TO WS-NAME-FOUND
-                           END-IF
+                           MOVE FUNCTION TRIM(WS-REC-RECIPIENT)
+                             TO WS-FOUND-USERNAME
+                           PERFORM DISPLAY-CONNECTION-DETAIL
+                           MOVE 'Y' TO WS-NAME-FOUND
                        END-IF
                END-READ
            END-PERFORM
@@ -1343,6 +1338,7 @@
                  TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
+
 
 
        DISPLAY-CONNECTION-DETAIL.
