@@ -1,0 +1,36 @@
+2
+testuser
+password123
+8
+1
+Software Engineer
+Develop web applications using modern technologies
+TechCorp Inc
+San Francisco, CA
+$120,000/year
+3
+6
+2
+testuser2
+password456
+8
+1
+Data Analyst Intern
+Analyze data and create reports for business insights
+DataCorp LLC
+Remote
+$25/hour
+3
+6
+2
+testuser3
+password789
+8
+1
+Marketing Coordinator
+Manage social media and marketing campaigns
+MarketingPro
+New York, NY
+NONE
+3
+6

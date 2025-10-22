@@ -1,0 +1,168 @@
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): 2
+=== USER LOGIN ===
+Enter username: testuser
+Enter password: password123
+You have successfully logged in!
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 8
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 1
+--- Post a New Job/Internship ---
+Enter Job Title: Software Engineer
+Enter Description (max 200 chars): Develop web applications using modern technologies
+Enter Employer Name: TechCorp Inc
+Enter Location: San Francisco, CA
+Enter Salary (optional, enter 'NONE' to skip): $120,000/year
+Job posted successfully!
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 3
+Returning to Main Menu...
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 6
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): 2
+=== USER LOGIN ===
+Enter username: testuser2
+Enter password: password456
+You have successfully logged in!
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 8
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 1
+--- Post a New Job/Internship ---
+Enter Job Title: Data Analyst Intern
+Enter Description (max 200 chars): Analyze data and create reports for business insights
+Enter Employer Name: DataCorp LLC
+Enter Location: Remote
+Enter Salary (optional, enter 'NONE' to skip): $25/hour
+Job posted successfully!
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 3
+Returning to Main Menu...
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 6
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): 2
+=== USER LOGIN ===
+Enter username: testuser3
+Enter password: password789
+You have successfully logged in!
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 8
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 1
+--- Post a New Job/Internship ---
+Enter Job Title: Marketing Coordinator
+Enter Description (max 200 chars): Manage social media and marketing campaigns
+Enter Employer Name: MarketingPro
+Enter Location: New York, NY
+Enter Salary (optional, enter 'NONE' to skip): NONE
+Job posted successfully!
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice: 3
+Returning to Main Menu...
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+Please select an option (1-8): 6
+Logging out...
