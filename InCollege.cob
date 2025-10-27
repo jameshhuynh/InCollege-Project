@@ -63,7 +63,7 @@
        01 JOB-REC         PIC X(500).
 
        FD APPLICATION-FILE.
-       01 APPLICATION-REC PIC X(100).
+       01 APPLICATION-REC PIC X(200).
 
 
 
@@ -761,6 +761,11 @@
                        AT END
                            MOVE 'Y' TO EOF-APPLICATION
                        NOT AT END
+                           MOVE SPACES TO WS-REC-APP-USER
+                           MOVE SPACES TO WS-REC-APP-TITLE
+                           MOVE SPACES TO WS-REC-APP-EMPLOYER
+                           MOVE SPACES TO WS-REC-APP-LOCATION
+
                            UNSTRING APPLICATION-REC DELIMITED BY ","
                                INTO WS-REC-APP-USER
                                     WS-REC-APP-TITLE
@@ -1981,3 +1986,4 @@
            WRITE OUT-REC.
 
        END PROGRAM STUDENT-SYSTEM.
+      
