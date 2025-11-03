@@ -38,6 +38,14 @@
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-APP-STATUS.
 
+           SELECT MESSAGE-FILE ASSIGN TO "messages.dat"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-MSG-STATUS.
+
+           SELECT TEMP-MESSAGE-FILE ASSIGN TO "temp_messages.dat"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-TEMP-MSG-STATUS.
+
 
        DATA DIVISION.
        FILE SECTION.
@@ -64,6 +72,12 @@
 
        FD APPLICATION-FILE.
        01 APPLICATION-REC PIC X(200).
+
+       FD MESSAGE-FILE.
+       01 MESSAGE-REC PIC X(500).
+
+       FD TEMP-MESSAGE-FILE.
+       01 TEMP-MESSAGE-REC PIC X(500).
 
 
 
@@ -216,6 +230,21 @@
        01  WS-REC-APP-EMPLOYER  PIC X(50).
        01  WS-REC-APP-LOCATION  PIC X(50).
 
+       01 WS-MSG-STATUS         PIC XX VALUE SPACES.
+       01 WS-TEMP-MSG-STATUS    PIC XX VALUE SPACES.
+
+       01 WS-MESSAGE-DATA.
+           05 MSG-SENDER    PIC X(20).
+           05 MSG-RECIPIENT PIC X(20).
+           05 MSG-CONTENT   PIC X(200).
+           05 MSG-TIMESTAMP PIC X(20).
+
+       01 WS-MESSAGE-RECIPIENT  PIC X(20).
+       01  WS-MESSAGE-CONTENT   PIC X(200).
+       01  EOF-MESSAGE          PIC X VALUE 'N'.
+       01  WS-VALID-CONNECTION  PIC X VALUE 'N'.
+       01  WS-MESSAGE-COUNT     PIC 99 VALUE 0.
+
 
 
 
@@ -267,6 +296,14 @@
               CLOSE APPLICATION-FILE
            ELSE
               CLOSE APPLICATION-FILE
+           END-IF.
+
+           OPEN INPUT MESSAGE-FILE
+           IF WS-MSG-STATUS = "35"
+               OPEN OUTPUT MESSAGE-FILE
+               CLOSE MESSAGE-FILE
+           ELSE
+               CLOSE MESSAGE-FILE
            END-IF.
 
        LOAD-USERS.
@@ -461,7 +498,9 @@
            PERFORM WRITE-OUTPUT-AND-DISPLAY
            MOVE "8. Job Search/Internship" TO WS-DISPLAY-MESSAGE
            PERFORM WRITE-OUTPUT-AND-DISPLAY
-           DISPLAY "Please select an option (1-8): " WITH NO ADVANCING
+           MOVE "9. Messages" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           DISPLAY "Please select an option (1-9): " WITH NO ADVANCING
            ACCEPT WS-MENU-CHOICE
 
            EVALUATE WS-MENU-CHOICE
@@ -476,6 +515,7 @@
                        PERFORM CLEAR-PROFILE-DATA
               WHEN '7' PERFORM VIEW-MY-NETWORK
               WHEN '8' PERFORM JOB-SEARCH-MENU
+              WHEN '9' PERFORM MESSAGING-MENU
               WHEN OTHER MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
                          PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
@@ -510,7 +550,6 @@
                    MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
-
 
        POST-JOB.
            MOVE "--- Post a New Job/Internship ---"
@@ -849,6 +888,120 @@
            END-IF.
 
 
+       MESSAGING-MENU.
+           MOVE "--- Messaging Menu ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "1. Send a New Meesage" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "2. View My Messages" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           MOVE "3. Back to Main Menu" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           DISPLAY "Enter your choice: " WITH NO ADVANCING
+           ACCEPT WS-MENU-CHOICE
+
+           EVALUATE WS-MENU-CHOICE
+               WHEN '1'
+                   PERFORM SEND-NEW-MESSAGE
+               WHEN '2'
+                   MOVE "This feature is under construction."
+                     TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN '3'
+                   MOVE "Returning to Main Menu..."
+                     TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+               WHEN OTHER
+                   MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-EVALUATE.
+
+       SEND-NEW-MESSAGE.
+           MOVE "--- Send a New Message ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           DISPLAY "Enter recipient's username: " WITH NO ADVANCING
+           ACCEPT WS-MESSAGE-RECIPIENT
+
+           PERFORM VALIDATE-MESSAGE-RECIPIENT
+
+           IF WS-VALID-CONNECTION = 'Y'
+               DISPLAY "Enter your message (max 200 chars): "
+                 WITH NO ADVANCING
+               ACCEPT WS-MESSAGE-CONTENT
+
+               PERFORM SAVE-MESSAGE-TO-FILE
+
+               MOVE SPACES TO WS-DISPLAY-MESSAGE
+               STRING "Message sent to " DELIMITED BY SIZE
+                      FUNCTION TRIM(WS-MESSAGE-RECIPIENT)
+                        DELIMITED BY SIZE
+                      " successfully!" DELIMITED BY SIZE
+                      INTO WS-DISPLAY-MESSAGE
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           ELSE
+               MOVE "You can only message users you are connected with."
+                 TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+           END-IF.
+
+       VALIDATE-MESSAGE-RECIPIENT.
+           MOVE 'N' TO WS-VALID-CONNECTION
+           MOVE 'N' TO EOF-CONNECTION
+
+           OPEN INPUT CONNECTION-FILE
+           PERFORM UNTIL EOF-CONNECTION = 'Y'
+               READ CONNECTION-FILE INTO CONN-REC
+                   AT END
+                       MOVE 'Y' TO EOF-CONNECTION
+                   NOT AT END
+                       UNSTRING CONN-REC DELIMITED BY ","
+                           INTO WS-REC-SENDER
+                                WS-REC-RECIPIENT
+                                WS-CONN-STATUS-FLAG
+                       END-UNSTRING
+
+                       IF (FUNCTION TRIM(WS-REC-SENDER) =
+                           FUNCTION TRIM(PF-USERNAME) AND
+                           FUNCTION TRIM(WS-REC-RECIPIENT) =
+                           FUNCTION TRIM(WS-MESSAGE-RECIPIENT) AND
+                           FUNCTION TRIM(WS-CONN-STATUS-FLAG) =
+                           "CONNECTED")
+                           OR
+                          (FUNCTION TRIM(WS-REC-SENDER) =
+                           FUNCTION TRIM(WS-MESSAGE-RECIPIENT) AND
+                           FUNCTION TRIM(WS-REC-RECIPIENT) =
+                           FUNCTION TRIM(PF-USERNAME) AND
+                           FUNCTION TRIM(WS-CONN-STATUS-FLAG) =
+                           "CONNECTED")
+                           MOVE 'Y' TO WS-VALID-CONNECTION
+                           MOVE 'Y' TO EOF-CONNECTION
+                       END-IF
+               END-READ
+           END-PERFORM
+           CLOSE CONNECTION-FILE.
+
+       SAVE-MESSAGE-TO-FILE.
+           MOVE FUNCTION CURRENT-DATE TO MSG-TIMESTAMP
+           MOVE PF-USERNAME TO MSG-SENDER
+           MOVE WS-MESSAGE-RECIPIENT TO MSG-RECIPIENT
+           MOVE WS-MESSAGE-CONTENT TO MSG-CONTENT
+
+           OPEN EXTEND MESSAGE-FILE
+           IF WS-MSG-STATUS = "00"
+               STRING MSG-SENDER DELIMITED BY SIZE
+                      "," DELIMITED BY SIZE
+                      MSG-RECIPIENT DELIMITED BY SIZE
+                      "," DELIMITED BY SIZE
+                      MSG-CONTENT DELIMITED BY SIZE
+                      "," DELIMITED BY SIZE
+                      MSG-TIMESTAMP DELIMITED BY SIZE
+                      INTO MESSAGE-REC
+               END-STRING
+               WRITE MESSAGE-REC
+               CLOSE MESSAGE-FILE
+           END-IF.
 
 
        CREATE-EDIT-PROFILE.
@@ -1986,4 +2139,3 @@
            WRITE OUT-REC.
 
        END PROGRAM STUDENT-SYSTEM.
-      
