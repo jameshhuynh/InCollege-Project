@@ -1,14 +1,63 @@
 1
-testuser
-Testpass1$$$
+alice
+Alice123!
 2
-testuser
-Testpass1$$$
-8
+alice
+Alice123!
+1
+Alice
+Smith
+Stanford University
+Computer Science
+2024
+Passionate about software development and AI.
+Software Engineer Intern
+Tech Corp
+Summer 2023
+Developed mobile applications
+DONE
+Bachelor of Science
+Stanford University
+2020-2024
+DONE
+6
+1
+bob
+Bob4567!
 2
+bob
+Bob4567!
 1
+Bob
+Johnson
+MIT
+Electrical Engineering
+2025
+Interested in robotics and embedded systems.
+Research Assistant
+MIT Lab
+Fall 2023
+Worked on robotics projects
+DONE
+DONE
+3
+Alice Smith
 1
-8
+6
+2
+alice
+Alice123!
+5
+1
+6
+2
+bob
+Bob4567!
+9
+1
+alice
+Hi Alice! Looking forward to connecting with you.
+9
 3
 6
 3
