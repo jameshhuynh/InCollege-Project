@@ -4,10 +4,7 @@ WELCOME TO INCOLLEGE
 1. Create New Account
 2. Login to Existing Account
 3. Exit
-Enter your choice (1-3): 1
 === CREATE NEW ACCOUNT ===
-Enter username: testuser
-Enter password: Testpass1$$$
 Account created successfully!
 ==============================
 WELCOME TO INCOLLEGE
@@ -15,12 +12,8 @@ WELCOME TO INCOLLEGE
 1. Create New Account
 2. Login to Existing Account
 3. Exit
-Enter your choice (1-3): 2
 === USER LOGIN ===
-Enter username: testuser
-Enter password: Testpass1$$$
 You have successfully logged in!
- 
 ======================================
 MAIN MENU
 ======================================
@@ -32,29 +25,9 @@ MAIN MENU
 6. Logout
 7. View My Network
 8. Job Search/Internship
-Please select an option (1-8): 8
---- Job Search/Internship Menu ---
-1. Post a Job/Internship
-2. Browse Jobs/Internships
-3. View My Applications
-4. Back to Main Menu
-Enter your choice: 2
---- Available Job Listings ---
-01. Software Intern at TechCorp (New York, NY)
------------------------------
-Enter job number to view details, or 0 to go back: 1
---- Job Details ---
-Title: Software Intern
-Description: Assist with backend automation tasks.
-Employer: TechCorp
-Location: New York, NY
-Salary: 25/hour
--------------------
-1. Apply for this Job
-2. Back to Job List
-Enter your choice: 1
-Your application for Software Intern at TechCorp has been submitted.
- 
+9. Messages
+--- Create/Edit Profile ---
+Profile saved successfully!
 ======================================
 MAIN MENU
 ======================================
@@ -66,36 +39,7 @@ MAIN MENU
 6. Logout
 7. View My Network
 8. Job Search/Internship
-Please select an option (1-8): 8
---- Job Search/Internship Menu ---
-1. Post a Job/Internship
-2. Browse Jobs/Internships
-3. View My Applications
-4. Back to Main Menu
-Enter your choice: 3
---- Your Job Applications ---
-Application Summary for testuser
-------------------------------
-Job Title: Software Intern
-Employer: TechCorp
-Location: New York, NY
----
-------------------------------
-Total Applications: 1
-------------------------------
- 
-======================================
-MAIN MENU
-======================================
-1. Create/Edit My Profile
-2. View My Profile
-3. Search for User
-4. Learn a New Skill
-5. View My Pending Connection Requests
-6. Logout
-7. View My Network
-8. Job Search/Internship
-Please select an option (1-8): 6
+9. Messages
 Logging out...
 ==============================
 WELCOME TO INCOLLEGE
@@ -103,5 +47,252 @@ WELCOME TO INCOLLEGE
 1. Create New Account
 2. Login to Existing Account
 3. Exit
-Enter your choice (1-3): 3
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+User found!
+--- Your Profile ---
+Name: Alice Smith
+University: Stanford University
+Major: Computer Science
+Graduation Year: 2024
+About Me: Passionate about software development and AI.
+Experience:
+Title: Software Engineer Intern
+Company: Tech Corp
+Dates: Summer 2023
+Description: Developed mobile applications
+--------------------
+Connection request sent to AliceSmith
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Pending Connection Requests ---
+Request from: bob
+1. Accept
+2. Reject
+✅ Connection request from bob has been ACCEPTED.
+-------------------------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Messaging Menu ---
+1. Send a New Meesage
+2. View My Messages
+3. Back to Main Menu
+--- Send a New Message ---
+Message sent to alice successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Messaging Menu ---
+1. Send a New Meesage
+2. View My Messages
+3. Back to Main Menu
+Returning to Main Menu...
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
 Goodbye!
+
+2. Reject
+Enter your choice for bob: ✅ Connection request from bob has been ACCEPTED.
+-------------------------------------
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Please select an option (1-9): Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): === USER LOGIN ===
+Enter username: Enter password: You have successfully logged in!
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Please select an option (1-9): --- Messaging Menu ---
+1. Send a New Meesage
+2. View My Messages
+3. Back to Main Menu
+Enter your choice: --- Send a New Message ---
+Enter recipient's username: Enter your message (max 200 chars): Message sent to alice successfully!
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Please select an option (1-9): --- Messaging Menu ---
+1. Send a New Meesage
+2. View My Messages
+3. Back to Main Menu
+Enter your choice: Returning to Main Menu...
+ 
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Please select an option (1-9): Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Enter your choice (1-3): Goodbye!
