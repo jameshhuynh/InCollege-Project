@@ -1,0 +1,267 @@
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== CREATE NEW ACCOUNT ===
+Account created successfully!
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Create/Edit Profile ---
+Profile saved successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+User found!
+--- Your Profile ---
+Name: Alice Smith
+University: Stanford University
+Major: Computer Science
+Graduation Year: 2024
+About Me: Passionate about software development and AI.
+Experience:
+Title: Software Engineering Intern
+Company: Tech Corp
+Dates: Summer 2023
+Description: Developed mobile applications
+--------------------
+Connection request sent to AliceSmith
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Pending Connection Requests ---
+Request from: bob
+1. Accept
+2. Reject
+✅ Connection request from bob has been ACCEPTED.
+-------------------------------------
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Messaging Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+--- Send a New Message ---
+Message sent to alice successfully!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Messaging Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+--- Your Messages ---
+You have no messages at this time.
+---------------------
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Returning to Main Menu...
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+=== USER LOGIN ===
+You have successfully logged in!
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+--- Messaging Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+--- Your Messages ---
+From: bob
+Message: Hi Alice! Looking forward to connecting with you.
+(Sent: 2025-11-10 04:32)
+---
+---------------------
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Returning to Main Menu...
+======================================
+MAIN MENU
+======================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+6. Logout
+7. View My Network
+8. Job Search/Internship
+9. Messages
+Logging out...
+==============================
+WELCOME TO INCOLLEGE
+==============================
+1. Create New Account
+2. Login to Existing Account
+3. Exit
+Goodbye!
