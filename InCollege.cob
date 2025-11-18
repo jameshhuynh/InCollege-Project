@@ -463,7 +463,7 @@
                PERFORM LOAD-PROFILE-FOR-USER
                PERFORM USER-DASHBOARD UNTIL WS-MENU-CHOICE = '6'
             ELSE
-               MOVE "Incorrect username/password, please try again."
+               MOVE "Login failed: username or password is incorrect.Please try again."
                    TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
             END-IF.
@@ -500,7 +500,7 @@
             
             IF WS-PASSWORD-LENGTH < PASSWORD-MIN-LENGTH 
                OR WS-PASSWORD-LENGTH > PASSWORD-MAX-LENGTH
-                MOVE "Password must be 8-12 characters"
+                MOVE "Password must be 8–12 characters long"
                     TO WS-DISPLAY-MESSAGE
                 PERFORM WRITE-OUTPUT-AND-DISPLAY
                 EXIT PARAGRAPH
@@ -587,7 +587,7 @@
                     MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
                 WHEN OTHER
-                    MOVE "Invalid choice. Please enter 1-3."
+                    MOVE "Invalid choice. Please select a valid option."
                         TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
             END-EVALUATE.
@@ -619,8 +619,10 @@
             PERFORM WRITE-OUTPUT-AND-DISPLAY
             MOVE "9. Messages" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+            MOVE "X. Exit Program" TO WS-DISPLAY-MESSAGE
+            PERFORM WRITE-OUTPUT-AND-DISPLAY
             
-            DISPLAY "Please select an option (1-9): " WITH NO ADVANCING
+            DISPLAY "Please select an option (1-9 or X): " WITH NO ADVANCING
             ACCEPT WS-MENU-CHOICE
         
             EVALUATE WS-MENU-CHOICE
@@ -629,48 +631,80 @@
                WHEN '3' PERFORM FIND-SOMEONE-OPTION
                WHEN '4' PERFORM LEARN-SKILL-OPTION
                WHEN '5' PERFORM VIEW-PENDING-CONNECTIONS
-               WHEN '6' 
-                   MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-                   MOVE SPACES TO PF-USERNAME
-                   PERFORM CLEAR-PROFILE-DATA
+               WHEN '6'
+                    MOVE "Logging out..." TO WS-DISPLAY-MESSAGE
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    MOVE SPACES TO PF-USERNAME
+                    PERFORM CLEAR-PROFILE-DATA
                WHEN '7' PERFORM VIEW-MY-NETWORK
                WHEN '8' PERFORM JOB-SEARCH-MENU
                WHEN '9' PERFORM MESSAGING-MENU
-               WHEN OTHER 
-                   MOVE "Invalid option." TO WS-DISPLAY-MESSAGE
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-            END-EVALUATE. 
+
+               WHEN 'X'
+                    MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    MOVE 'N' TO WS-CONTINUE
+
+               WHEN OTHER
+                    MOVE "Invalid choice. Please select a valid option." 
+                      TO WS-DISPLAY-MESSAGE
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+            END-EVALUATE.
+
         
         *> ============================================================
         *> JOB SEARCH MENU & OPERATIONS
         *> ============================================================
-        JOB-SEARCH-MENU.
+                JOB-SEARCH-MENU.
             MOVE "--- Job Search/Internship Menu ---"
                 TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+
             MOVE "1. Post a Job/Internship" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+
             MOVE "2. Browse Jobs/Internships" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+
             MOVE "3. View My Applications" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
-            MOVE "4. Back to Main Menu" TO WS-DISPLAY-MESSAGE
+
+            MOVE "B. Go Back" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
-            DISPLAY "Enter your choice: " WITH NO ADVANCING
+
+            MOVE "X. Exit Program" TO WS-DISPLAY-MESSAGE
+            PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+            DISPLAY "Enter your choice (1-3, B, or X): " WITH NO ADVANCING
             ACCEPT WS-MENU-CHOICE
         
             EVALUATE WS-MENU-CHOICE
-                WHEN '1' PERFORM POST-JOB
-                WHEN '2' PERFORM BROWSE-JOBS
-                WHEN '3' PERFORM VIEW-MY-APPLICATIONS
-                WHEN '4'
+                WHEN '1' 
+                    PERFORM POST-JOB
+
+                WHEN '2' 
+                    PERFORM BROWSE-JOBS
+
+                WHEN '3' 
+                    PERFORM VIEW-MY-APPLICATIONS
+
+                WHEN 'B'
                     MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    EXIT PARAGRAPH
+
+                WHEN 'X'
+                    MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    MOVE 'N' TO WS-CONTINUE
+                    EXIT PARAGRAPH
+
                 WHEN OTHER
-                    MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
+                    MOVE "Invalid choice. Please select a valid option." 
+                        TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
             END-EVALUATE.
+
         
         POST-JOB.
             MOVE "--- Post a New Job/Internship ---"
@@ -993,28 +1027,49 @@
         *> ============================================================
         *> MESSAGING MENU & OPERATIONS
         *> ============================================================
-        MESSAGING-MENU.
+                MESSAGING-MENU.
             MOVE "--- Messaging Menu ---" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+
             MOVE "1. Send a New Message" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
+
             MOVE "2. View My Messages" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
-            MOVE "3. Back to Main Menu" TO WS-DISPLAY-MESSAGE
+
+            MOVE "B. Go Back" TO WS-DISPLAY-MESSAGE
             PERFORM WRITE-OUTPUT-AND-DISPLAY
-            DISPLAY "Enter your choice: " WITH NO ADVANCING
+
+            MOVE "X. Exit Program" TO WS-DISPLAY-MESSAGE
+            PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+            DISPLAY "Enter your choice (1-2, B, or X): " WITH NO ADVANCING
             ACCEPT WS-MENU-CHOICE
         
             EVALUATE WS-MENU-CHOICE
-                WHEN '1' PERFORM SEND-NEW-MESSAGE
-                WHEN '2' PERFORM VIEW-MY-MESSAGES
-                WHEN '3'
+                WHEN '1'
+                    PERFORM SEND-NEW-MESSAGE
+
+                WHEN '2'
+                    PERFORM VIEW-MY-MESSAGES
+
+                WHEN 'B'
                     MOVE "Returning to Main Menu..." TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    EXIT PARAGRAPH
+
+                WHEN 'X'
+                    MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
+                    PERFORM WRITE-OUTPUT-AND-DISPLAY
+                    MOVE 'N' TO WS-CONTINUE
+                    EXIT PARAGRAPH
+
                 WHEN OTHER
-                    MOVE "Invalid choice." TO WS-DISPLAY-MESSAGE
+                    MOVE "Invalid choice. Please select a valid option."
+                        TO WS-DISPLAY-MESSAGE
                     PERFORM WRITE-OUTPUT-AND-DISPLAY
             END-EVALUATE.
+
         
         SEND-NEW-MESSAGE.
             MOVE "--- Send a New Message ---" TO WS-DISPLAY-MESSAGE
@@ -1735,11 +1790,40 @@
         *> FIND SOMEONE OPTION
         *> Allows user to search by full name and view profile.
         *>**************************************************************
-       FIND-SOMEONE-OPTION.
-           DISPLAY "Enter full name to search (e.g., John Doe): "
-           WITH NO ADVANCING
+        FIND-SOMEONE-OPTION.
+           MOVE "--- Find Someone ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "Enter full name to search (e.g., John Doe)" 
+               TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "B. Go Back" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "X. Exit Program" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           DISPLAY "Your choice or name: " WITH NO ADVANCING
            ACCEPT WS-SEARCH-NAME
            MOVE FUNCTION TRIM(WS-SEARCH-NAME) TO WS-SEARCH-NAME
+
+           *> --- Handle back or exit ---
+           EVALUATE WS-SEARCH-NAME
+               WHEN "B"
+                   MOVE "Returning to Main Menu..." 
+                       TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   EXIT PARAGRAPH
+
+               WHEN "X"
+                   MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   MOVE "N" TO WS-CONTINUE
+                   EXIT PARAGRAPH
+           END-EVALUATE
+
+           *> --- Normal name search ---
            UNSTRING WS-SEARCH-NAME DELIMITED BY SPACE
                INTO WS-SEARCH-FIRST
                     WS-SEARCH-LAST
@@ -1750,50 +1834,80 @@
            MOVE SPACES TO WS-FOUND-USERNAME
 
            OPEN INPUT PROFILE-FILE
+
            PERFORM UNTIL EOF-PROFILE = 'Y'
                READ PROFILE-FILE INTO PROFILE-REC
-                   AT END
+                   AT END 
                        MOVE 'Y' TO EOF-PROFILE
                    NOT AT END
                        PERFORM PARSE-SEARCH-PROFILE-REC
 
                        IF SF-FIRST-NAME = WS-SEARCH-FIRST
-                          AND SF-LAST-NAME = WS-SEARCH-LAST
+                          AND SF-LAST-NAME  = WS-SEARCH-LAST
+                          
                           MOVE 'Y' TO WS-NAME-FOUND
                           MOVE WS-REC-USERNAME TO WS-FOUND-USERNAME
+
                           MOVE "User found!" TO WS-DISPLAY-MESSAGE
                           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
                           PERFORM DISPLAY-SEARCH-PROFILE
                           PERFORM SEND-CONNECTION-REQUEST-OFFER
+
                           MOVE 'Y' TO EOF-PROFILE
                        END-IF
-           END-READ
+               END-READ
            END-PERFORM
+
            CLOSE PROFILE-FILE
 
            IF WS-NAME-FOUND = 'N'
-               MOVE "No one by that name could be found." TO
-               WS-DISPLAY-MESSAGE
+               MOVE "No one by that name could be found."
+                   TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-IF.
+
        *>****************************************************************
        *> SEND CONNECTION REQUEST OFFER
        *> Shows menu to send a request or go back.
        *>****************************************************************
-       SEND-CONNECTION-REQUEST-OFFER.
-           DISPLAY "1. Send Connection Request"
-           DISPLAY "2. Back to Main Menu"
-           DISPLAY "Enter your choice (1-2): " WITH NO ADVANCING
+              SEND-CONNECTION-REQUEST-OFFER.
+           MOVE "--- Connection Options ---" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "1. Send Connection Request" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "B. Go Back" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           MOVE "X. Exit Program" TO WS-DISPLAY-MESSAGE
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           DISPLAY "Enter your choice: " WITH NO ADVANCING
            ACCEPT WS-MENU-CHOICE
+           MOVE FUNCTION TRIM(WS-MENU-CHOICE) TO WS-MENU-CHOICE
 
            EVALUATE WS-MENU-CHOICE
-               WHEN '1'
+               WHEN "1"
                    PERFORM SEND-CONNECTION-REQUEST
+
+               WHEN "B"
+                   MOVE "Returning to Main Menu..." 
+                       TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+               WHEN "X"
+                   MOVE "Goodbye!" TO WS-DISPLAY-MESSAGE
+                   PERFORM WRITE-OUTPUT-AND-DISPLAY
+                   MOVE "N" TO WS-CONTINUE
+
                WHEN OTHER
-                   MOVE "Returning to Main Menu..." TO
-                   WS-DISPLAY-MESSAGE
+                   MOVE "Invalid choice." 
+                       TO WS-DISPLAY-MESSAGE
                    PERFORM WRITE-OUTPUT-AND-DISPLAY
            END-EVALUATE.
+
        *>****************************************************************
        *> SEND CONNECTION REQUEST
        *> Validates and sends a new connection request.
@@ -2398,3 +2512,4 @@
 
        END PROGRAM STUDENT-SYSTEM.
        
+
