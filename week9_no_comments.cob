@@ -1687,48 +1687,71 @@
            END-EVALUATE.
 
        SEND-CONNECTION-REQUEST.
+
            *> 1. Check if sending to yourself
            IF FUNCTION TRIM(PF-USERNAME) = FUNCTION TRIM(WS-FOUND-USERNAME)
-                MOVE "Cannot send connection request to yourself."
-                    TO WS-DISPLAY-MESSAGE
-                PERFORM WRITE-OUTPUT-AND-DISPLAY
-                EXIT PARAGRAPH
+               MOVE "Cannot send connection request to yourself."
+                   TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
            END-IF
 
-           *> 2. Check existing connections and pending statuses
+           *> 2. Check existing relationships
            PERFORM CHECK-EXISTING-CONNECTIONS
 
-           *> CASE A — You already SENT a pending request (YOU → THEM)
+
+           *> CASE A — THEY sent YOU a pending request (THEM → YOU)
+           IF WS-CONN-RECEIVED-FROM-USER = 'Y'
+               MOVE "This user has already sent you a connection request."
+                   TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
+           END-IF
+
+
+           *> CASE B — YOU SENT THEM a pending request (YOU → THEM)
            IF WS-CONN-ALREADY-EXISTS = 'Y'
               AND WS-CONN-RECEIVED-FROM-USER = 'N'
+              AND WS-CONN-STATUS-FLAG = "PENDING"
                MOVE "You already have a pending connection request with this user."
                    TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
                EXIT PARAGRAPH
            END-IF
 
-      *> CASE B — You are already CONNECTED
+
+           *> CASE C — You are already CONNECTED
            IF WS-CONN-ALREADY-EXISTS = 'Y'
-              AND WS-CONN-RECEIVED-FROM-USER = 'N'
+              AND WS-CONN-STATUS-FLAG = "CONNECTED"
                MOVE "You are already connected with this user."
-                  TO WS-DISPLAY-MESSAGE
+                   TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
                EXIT PARAGRAPH
            END-IF
 
-      *> CASE C — THEY already sent YOU a request (THEM → YOU)
-           IF WS-CONN-RECEIVED-FROM-USER = 'Y'
-               STRING "This user has already sent you a connection"
-                      " request."
-                    DELIMITED BY SIZE
-                    INTO WS-DISPLAY-MESSAGE
-               END-STRING
-               PERFORM WRITE-OUTPUT-AND-DISPLAY
-               EXIT PARAGRAPH
-           END-IF
 
-      *> CASE D — No existing or pending requests → SAFE TO SEND
+           *> CASE D — Safe: create NEW pending connection
            PERFORM SAVE-CONNECTION-REQUEST
+
+           MOVE FUNCTION TRIM(WS-SEARCH-FIRST) TO WS-TEMP-FIRST
+           MOVE FUNCTION TRIM(WS-SEARCH-LAST)  TO WS-TEMP-LAST
+
+           STRING WS-TEMP-FIRST DELIMITED BY SPACE
+                  " "          DELIMITED BY SPACE
+                  WS-TEMP-LAST DELIMITED BY SPACE
+               INTO WS-OUTPUT-LINE-TEMP
+           END-STRING
+
+           STRING "Connection request sent to "
+                  DELIMITED BY SIZE
+                  WS-OUTPUT-LINE-TEMP DELIMITED BY SIZE
+               INTO WS-DISPLAY-MESSAGE
+           END-STRING
+
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+
+           EXIT PARAGRAPH.
+
   
       *> Build full name for message
            MOVE FUNCTION TRIM(WS-SEARCH-FIRST) TO WS-TEMP-FIRST
