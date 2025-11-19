@@ -1158,10 +1158,17 @@
            ACCEPT PF-MAJOR
            DISPLAY "Enter Graduation Year (YYYY): " WITH NO ADVANCING
            ACCEPT WS-INPUT-LINE
-           IF FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) > 1900
-               AND FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) < 2100
-              MOVE FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) TO PF-GRAD-YEAR
+           IF WS-INPUT-LINE(1:4) IS NUMERIC
+             IF FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) >= 1900
+              AND FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) <= 2100
+                MOVE FUNCTION NUMVAL(WS-INPUT-LINE(1:4)) TO PF-GRAD-YEAR
+             ELSE
+                MOVE 0 TO PF-GRAD-YEAR
+             END-IF
+           ELSE
+             MOVE 0 TO PF-GRAD-YEAR
            END-IF
+
            DISPLAY "Enter About Me (optional): " WITH NO ADVANCING
            ACCEPT PF-ABOUT-ME.
 
