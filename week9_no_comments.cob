@@ -1702,6 +1702,7 @@
                MOVE "You are already connected with this user." TO
                WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
            ELSE
                IF WS-CONN-RECEIVED-FROM-USER = 'Y'
                    STRING "This user has already sent you a connection"
