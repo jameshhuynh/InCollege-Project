@@ -1687,53 +1687,68 @@
            END-EVALUATE.
 
        SEND-CONNECTION-REQUEST.
-           *> Check if sending to self
-           IF PF-USERNAME = WS-FOUND-USERNAME
-              MOVE "Cannot send connection request to yourself." TO
-              WS-DISPLAY-MESSAGE
-              PERFORM WRITE-OUTPUT-AND-DISPLAY
-              EXIT PARAGRAPH
+           *> 1. Check if sending to yourself
+           IF FUNCTION TRIM(PF-USERNAME) = FUNCTION TRIM(WS-FOUND-USERNAME)
+                MOVE "Cannot send connection request to yourself."
+                    TO WS-DISPLAY-MESSAGE
+                PERFORM WRITE-OUTPUT-AND-DISPLAY
+                EXIT PARAGRAPH
            END-IF
 
-           *> Validate request constraints
+           *> 2. Check existing connections and pending statuses
            PERFORM CHECK-EXISTING-CONNECTIONS
 
+           *> CASE A — You already SENT a pending request (YOU → THEM)
            IF WS-CONN-ALREADY-EXISTS = 'Y'
-               MOVE "You are already connected with this user." TO
-               WS-DISPLAY-MESSAGE
+              AND WS-CONN-RECEIVED-FROM-USER = 'N'
+               MOVE "You already have a pending connection request with this user."
+                   TO WS-DISPLAY-MESSAGE
                PERFORM WRITE-OUTPUT-AND-DISPLAY
                EXIT PARAGRAPH
-           ELSE
-               IF WS-CONN-RECEIVED-FROM-USER = 'Y'
-                   STRING "This user has already sent you a connection"
-                     " request."
+           END-IF
+
+      *> CASE B — You are already CONNECTED
+           IF WS-CONN-ALREADY-EXISTS = 'Y'
+              AND WS-CONN-RECEIVED-FROM-USER = 'N'
+               MOVE "You are already connected with this user."
+                  TO WS-DISPLAY-MESSAGE
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
+           END-IF
+
+      *> CASE C — THEY already sent YOU a request (THEM → YOU)
+           IF WS-CONN-RECEIVED-FROM-USER = 'Y'
+               STRING "This user has already sent you a connection"
+                      " request."
                     DELIMITED BY SIZE
                     INTO WS-DISPLAY-MESSAGE
-                   END-STRING
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-               ELSE
-                   PERFORM SAVE-CONNECTION-REQUEST
+               END-STRING
+               PERFORM WRITE-OUTPUT-AND-DISPLAY
+               EXIT PARAGRAPH
+           END-IF
 
-                   *> Trim and build full name
-                   MOVE FUNCTION TRIM(WS-SEARCH-FIRST) TO WS-TEMP-FIRST
-                   MOVE FUNCTION TRIM(WS-SEARCH-LAST)  TO WS-TEMP-LAST
+      *> CASE D — No existing or pending requests → SAFE TO SEND
+           PERFORM SAVE-CONNECTION-REQUEST
+  
+      *> Build full name for message
+           MOVE FUNCTION TRIM(WS-SEARCH-FIRST) TO WS-TEMP-FIRST
+           MOVE FUNCTION TRIM(WS-SEARCH-LAST)  TO WS-TEMP-LAST
 
-                   STRING WS-TEMP-FIRST DELIMITED BY SPACE
-                          " "          DELIMITED BY SPACE
-                          WS-TEMP-LAST DELIMITED BY SPACE
-                          INTO WS-OUTPUT-LINE-TEMP
-                   END-STRING
+           STRING WS-TEMP-FIRST DELIMITED BY SPACE
+                  " "          DELIMITED BY SPACE
+                  WS-TEMP-LAST DELIMITED BY SPACE
+                INTO WS-OUTPUT-LINE-TEMP
+           END-STRING
 
-                   *> Build final message
-                   STRING "Connection request sent to "
+           STRING "Connection request sent to "
                    DELIMITED BY SIZE
-                       WS-OUTPUT-LINE-TEMP            DELIMITED BY SPACE
-                          INTO WS-DISPLAY-MESSAGE
-                   END-STRING
+                   WS-OUTPUT-LINE-TEMP DELIMITED BY SPACE
+                 INTO WS-DISPLAY-MESSAGE
+           END-STRING
 
-                   PERFORM WRITE-OUTPUT-AND-DISPLAY
-               END-IF
-           END-IF.
+           PERFORM WRITE-OUTPUT-AND-DISPLAY
+           EXIT PARAGRAPH.
+
 
        CHECK-EXISTING-CONNECTIONS.
            MOVE 'N' TO WS-CONN-ALREADY-EXISTS WS-CONN-RECEIVED-FROM-USER
